@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-05-0';
+const version = 'propertyfinder 2022-05-05-1';
 
 /* 
  * SPA (Single-Page Application)
@@ -450,9 +450,12 @@ function router() {
 
     }
 
+    /*
     if ( localStorage.getItem('base64') ) {
       return viewHome();
     }
+    */
+    return viewHome();
 }
 
 //-----------------------------------------------------------
