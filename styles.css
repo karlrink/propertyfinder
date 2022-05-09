@@ -5,6 +5,8 @@
 html {
     height:100%;
     box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 body {
@@ -50,12 +52,27 @@ section {
 .main-nav {
     display: flex;
 }
-    
+
 .push {
     margin-left: auto;
 }
 
 /* https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details */
+
+/*
+ * Always set the map height explicitly to define the size of the div element
+ * that contains the map.
+ */
+
+/* 
+#map {
+  height: 100%;
+}
+*/
+
+#container {
+  height: 100%;
+}
 
 
 

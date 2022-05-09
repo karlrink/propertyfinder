@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-05-1';
+const version = 'propertyfinder.2022-05-09-0';
 
 /* 
  * SPA (Single-Page Application)
@@ -11,9 +11,9 @@ const start = performance.now();
 const origin = localStorage.getItem('origin');
 const base64 = localStorage.getItem('base64');
 
-const header    = document.querySelector('.page-header');
-const container = document.querySelector('.container');
-const footer    = document.querySelector('.page-footer');
+const container = document.getElementById('container');
+
+//import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
 
 async function getResponse(response) {
     if ( ! response.ok) {
@@ -58,38 +58,71 @@ function viewHome() {
 
     let html = '';
 
+    html += `
+    <div class="wrapper">
+        <header class="page-header">
+            <a href="?"><button type="button">Home</button></a>
+        </header>
+        <main class="page-body">
+    `;
+
+
     if ( ! localStorage.getItem('base64') ) {
         html += '<a href="?login"><button type="button">Login</button></a>';
     } else {
         html += '<a href="?view=geosearch"><button type="button">Geo Search</button></a>';
         html += '<a href="?view=mylocation"><button type="button">My Location</button></a>';
+        html += '<a href="?view=maps"><button type="button">Maps</button></a>';
     }
 
-    header.innerHTML = `<a href="?"><button type="button">Home</button></a>`;
+    html += `
+        </main>
+        <footer class="page-footer">
+            <a href="?view=info"><button type="button">Info</button></a>
+        </footer>
+    </div>
+    `;
+
     container.innerHTML = html;
-    footer.innerHTML = `<a href="?view=info"><button type="button">Info</button></a>`;
 
     history.pushState({page: 'home'}, "home", "?view=home");
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer
+
+
 function viewInfo() {
 
     let html = '';
+
+    html += `
+    <div class="wrapper">
+        <header class="page-header">
+            <a href="?"><button type="button">Home</button></a>
+        </header>
+        <main class="page-body">
+    `;
+
 
     for (const a in localStorage) {
         //console.log(a, ' = ', localStorage[a]);
         html += '<div>' + a + '<input type="text" value="'+ localStorage[a] +'" disabled ></div>';
     }
 
-    let footer_html = '';
-    footer_html += '<div><button onclick="return addLocalStore();">Add Item</button>';
-    footer_html += '     <button onclick="localStorage.clear();location.reload();">Clear Storage</button>';
-    footer_html += '     <button onclick="return Login();">Login</button>';
-    footer_html += '     <button onclick="return Logout();">Logout</button>';
+    html += `
+        </main>
+        <footer class="page-footer">
+            <button onclick="return addLocalStore();">Add Item</button>
+            <button onclick="localStorage.clear();location.reload();">Clear Storage</button>
+            <button onclick="return Login();">Login</button>
+            <button onclick="return Logout();">Logout</button>
+        </footer>
+    </div>
+    `;
 
-    header.innerHTML = `<a href="?"><button type="button">Home</button></a>`;
     container.innerHTML = html;
-    footer.innerHTML = footer_html;
 
     history.pushState({page: 'info'}, "info", "?view=info");
 }
@@ -104,7 +137,19 @@ function viewGeoSearch() {
     //const url = "https://opensearch.nationsinfocorp.com/ninfo-property/_search"
     const url = origin + "/ninfo-property/_search"
 
-    let html = `
+    let html = '';
+
+    html += `
+    <div class="wrapper">
+        <header class="page-header">
+            <a href="?"><button type="button">Home</button></a>
+            <a href="?view=geosearch"><button type="button">Geo Search</button></a>
+        </header>
+        <main class="page-body">
+    `;
+
+
+    html += `
     <form id="form" action="${url}" method="post">
       <br>
       <label for="latitude">latitude:</label>
@@ -120,17 +165,14 @@ function viewGeoSearch() {
     </form>
     `;
 
-    header.innerHTML = 
-    `
-      <a href="?"><button type="button">Home</button></a>
-      <a href="?view=geosearch"><button type="button">Geo Search</button></a>
+    html += `
+        </main>
+        <footer class="page-footer">
+        </footer>
+    </div>
     `;
 
     container.innerHTML = html;
-    footer.innerHTML =
-    `
-      <a href="?view=geosearch"><button type="button">Geo Search</button></a>
-    `;
 
     const form = document.getElementById('form');
 
@@ -145,7 +187,7 @@ function viewGeoSearch() {
             //console.log(pair[0], pair[1]);
         }
 
-        opensearch_data = 
+        const opensearch_data = 
         { "query": {
             "bool": {
               "filter": {
@@ -200,16 +242,30 @@ function viewMyLocation() {
     document.title = 'My Location';
 
     let html = '';
-        html += '<button id="find-me">Get My Location</button><br/>';
-        html += '<p id="status"></p>';
-        html += '<a id="map-link" target="_blank"></a>';
-        html += '<div id="geo-form"></div>';
-        html += '<div id="geo-output"></div>';
 
-    header.innerHTML = `<a href="?"><button type="button">Home</button></a>
-                        <a href="?view=mylocation"><button type="button">My Location</button></a>`;
+    html += `
+    <div class="wrapper">
+        <header class="page-header">
+            <a href="?"><button type="button">Home</button></a>
+            <a href="?view=mylocation"><button type="button">My Location</button></a>
+        </header>
+        <main class="page-body">
+    `;
+
+    html += '<button id="find-me">Get My Location</button><br/>';
+    html += '<p id="status"></p>';
+    html += '<a id="map-link" target="_blank"></a>';
+    html += '<div id="geo-form"></div>';
+    html += '<div id="geo-output"></div>';
+
+    html += `
+        </main>
+        <footer class="page-footer">
+        </footer>
+    </div>
+    `;
+
     container.innerHTML = html;
-    footer.innerHTML = ``;
 
     document.querySelector('#find-me').addEventListener('click', geoFindMe);
 
@@ -232,8 +288,11 @@ function geoFindMe() {
     const longitude = position.coords.longitude;
 
     status.textContent = '';
-    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-    mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+    //mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+    //mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+
+    mapLink.href = `https://maps.google.com/maps?q=${latitude},${longitude}`;
+    mapLink.textContent = `📍 ${latitude}°,${longitude}°`;
 
     geoForm.innerHTML = `
     <form onsubmit="submitGeoForm(event)">
@@ -264,6 +323,16 @@ function geoFindMe() {
 
 }
 
+//export default async function submitGeoForm(event) {
+//const doAction = () =>
+//const submitGeoForm = async (event) => {
+// https://stackoverflow.com/questions/5067887/function-is-not-defined-uncaught-referenceerror
+// https://stackoverflow.com/questions/52785120/function-in-my-javascript-module-is-not-defined
+// window.onload = function() { ... }
+
+// https://stackoverflow.com/questions/30803497/onsubmit-function-is-not-defined
+window.submitGeoForm = submitGeoForm;
+
 async function submitGeoForm(event) {
   
   event.preventDefault();
@@ -275,7 +344,7 @@ async function submitGeoForm(event) {
   //console.log(latitude);
   //console.log(longitude);
 
-  opensearch_data =
+  const opensearch_data =
     {
       "query": {
         "match_all": {}
@@ -346,15 +415,19 @@ async function submitGeoForm(event) {
     htmlSegment += `${street_address} ${city} ${state_or_province} ${postal_code}`;
     htmlSegment += `( ${haversine_distance} `;
     // prevent tabnabbing with rel="noopener noreferrer" https://en.wikipedia.org/wiki/Tabnabbing
-    htmlSegment += `<a href="${openstreetmap_href}" target="_blank" rel="noopener noreferrer">${latitude_2},${longitude_2}</a>`;
 
-    htmlSegment += ` <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍</a>)`;
+    //htmlSegment += `<a href="${openstreetmap_href}" target="_blank" rel="noopener noreferrer">${latitude_2},${longitude_2}</a>`;
+    //htmlSegment += ` <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍</a>)`;
+    //htmlSegment += ` 📍 ${latitude_2},${longitude_2} ) `;
+
+    htmlSegment += ` <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍 ${latitude_2},${longitude_2}</a> )`;
 
     htmlSegment += ` <a href="${picture_data_source_url}" target="_blank" rel="noopener noreferrer">👁️</a>`;
 
     htmlSegment += `</summary>`;
 
     htmlSegment += `<p>`;
+
     for (let item in hits[hit]['_source']){
     
       let value = hits[hit]['_source'][item];
@@ -378,6 +451,98 @@ async function submitGeoForm(event) {
   history.pushState({page: 'mylocation-geo-submit'}, "mylocation-geo-submit", "?view=mylocation&geo=true&submit=true");
 
 }
+
+
+// https://developers.google.com/maps/documentation/javascript/overview  
+// https://developers.google.com/maps/documentation/javascript?hl=en_US
+// https://developers.google.com/maps/documentation/javascript/overview
+
+import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
+
+function viewMaps() {
+
+    document.title = 'Maps';
+
+    const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
+
+    var script_polyfill = document.createElement('script');
+    script_polyfill.src = 'https://polyfill.io/v3/polyfill.min.js?features=default';
+    script_polyfill.async = true;
+
+    var script_googlemaps = document.createElement('script');
+    //script_googlemaps.src = 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap';
+    script_googlemaps.src = `https://maps.googleapis.com/maps/api/js?key=${google_maps_api_key}&callback=initMap`;
+    script_googlemaps.async = true;
+
+    //var script_markerclusterer = document.createElement('script');
+    //script_markerclusterer.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js';
+    //script_markerclusterer.async = true;
+
+    document.head.appendChild(script_polyfill);
+    document.head.appendChild(script_googlemaps);
+    //document.head.appendChild(script_markerclusterer);
+
+    window.initMap = function() {
+    };
+
+    //let map;
+
+    //import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
+
+    function initMap() {
+     
+      const map = new google.maps.Map(document.getElementById("container"), {
+        center: { lat: 34.1895294, lng: -118.624725 },
+        zoom: 15,
+      });
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: "",
+        disableAutoPan: true,
+      });
+
+      const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+      const markers = locations.map((position, i) => {
+        const label = labels[i % labels.length];
+        const marker = new google.maps.Marker({
+          position,
+          label,
+        });
+
+        marker.addListener("click", () => {
+          infoWindow.setContent(label);
+          infoWindow.open(map, marker);
+        });
+        return marker;
+      });
+
+      //const markerCluster = new markerClusterer.MarkerClusterer({ map, markers });
+      new MarkerClusterer({ markers, map });
+
+    }
+
+    const locations = [
+      { lat: 34.189185, lng: -118.6208887 },
+      { lat: 34.192094, lng: -118.6214837 },
+      { lat: 34.185719, lng: -118.6226277 },
+      { lat: 34.193996, lng: -118.6330027 },
+      { lat: 34.191773, lng: -118.6191387 },
+      { lat: 34.192134, lng: -118.6185827 },
+      { lat: 34.18934, lng: -118.6171757 },
+      { lat: 34.194843, lng: -118.6191097 },
+      { lat: 34.190658, lng: -118.6370267 },
+      { lat: 34.198638, lng: -118.6259587 },
+    ];
+
+    window.initMap = initMap;
+
+    history.pushState({page: 'maps'}, "maps", "?view=maps");
+
+}
+
+// https://developers.google.com/maps/documentation/javascript/marker-clustering
+
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push
@@ -448,13 +613,16 @@ function router() {
             return viewGeoSearch();
         }
 
+        if (view === 'maps') {
+            return viewMaps();
+        }
+
     }
 
-    /*
-    if ( localStorage.getItem('base64') ) {
-      return viewHome();
+    if ( ! localStorage.getItem('base64') ) {
+      return Login();
     }
-    */
+
     return viewHome();
 }
 
@@ -480,3 +648,6 @@ const done = performance.now() - start;
 console.log(version + ' ' + done);
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
+// import declarations may only appear at top level of a module
+// <script type="module" src="script.js"></script>
+
