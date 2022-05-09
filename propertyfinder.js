@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-09-0';
+const version = 'propertyfinder.2022-05-09-1';
 
 /* 
  * SPA (Single-Page Application)
@@ -23,6 +23,7 @@ async function getResponse(response) {
 }
 
 
+window.Login = Login;
 function Login() {
 
     //let login_origin = window.prompt("url: ", 'http://127.0.0.1:9200');
@@ -38,12 +39,15 @@ function Login() {
     location.replace('?view=home');
 }
 
+
+window.Logout = Logout;
 function Logout() {
     localStorage.clear();
     history.pushState({page: 'logout'}, "logout", "?logout=true");
     location.replace('?');
 }
 
+window.addLocalStore = addLocalStore;
 function addLocalStore() {
    const item_name  = window.prompt("name: ");
    const item_value = window.prompt("value: ");
