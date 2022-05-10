@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-09-1';
+const version = 'propertyfinder.2022-05-09-2b';
 
 /* 
  * SPA (Single-Page Application)
@@ -13,7 +13,7 @@ const base64 = localStorage.getItem('base64');
 
 const container = document.getElementById('container');
 
-//import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
+import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
 
 async function getResponse(response) {
     if ( ! response.ok) {
@@ -461,9 +461,8 @@ async function submitGeoForm(event) {
 // https://developers.google.com/maps/documentation/javascript?hl=en_US
 // https://developers.google.com/maps/documentation/javascript/overview
 
-import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
 
-function viewMaps() {
+function viewMaps_v1() {
 
     document.title = 'Maps';
 
@@ -481,17 +480,11 @@ function viewMaps() {
     //var script_markerclusterer = document.createElement('script');
     //script_markerclusterer.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js';
     //script_markerclusterer.async = true;
+    //import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
 
     document.head.appendChild(script_polyfill);
     document.head.appendChild(script_googlemaps);
     //document.head.appendChild(script_markerclusterer);
-
-    window.initMap = function() {
-    };
-
-    //let map;
-
-    //import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
 
     function initMap() {
      
@@ -505,7 +498,7 @@ function viewMaps() {
         disableAutoPan: true,
       });
 
-      const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      //const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
       const markers = locations.map((position, i) => {
         const label = labels[i % labels.length];
@@ -526,6 +519,9 @@ function viewMaps() {
 
     }
 
+    const labels = [ "Alpha", "Beta", "Charlie", "Delta", "Echo",
+                     "Foxtrot", "G", "Helo", "India", "Jack", "KLMNOPQRSTUVWXYZ"];
+
     const locations = [
       { lat: 34.189185, lng: -118.6208887 },
       { lat: 34.192094, lng: -118.6214837 },
@@ -544,6 +540,139 @@ function viewMaps() {
     history.pushState({page: 'maps'}, "maps", "?view=maps");
 
 }
+
+
+function viewMaps() {
+
+    document.title = 'Maps v2';
+
+    const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
+
+    var script_polyfill = document.createElement('script');
+    script_polyfill.src = 'https://polyfill.io/v3/polyfill.min.js?features=default';
+    script_polyfill.async = true;
+
+    var script_googlemaps = document.createElement('script');
+    //script_googlemaps.src = 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap';
+    script_googlemaps.src = `https://maps.googleapis.com/maps/api/js?key=${google_maps_api_key}&callback=initMap`;
+    script_googlemaps.async = true;
+
+    //var script_markerclusterer = document.createElement('script');
+    //script_markerclusterer.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js';
+    //script_markerclusterer.async = true;
+    //import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
+
+    document.head.appendChild(script_polyfill);
+    document.head.appendChild(script_googlemaps);
+    //document.head.appendChild(script_markerclusterer);
+
+    async function initMap() {
+
+          const geoCoords = async () => {
+            const pos = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject);
+            });
+        
+            return {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+            };
+          };
+
+          // wait for coords.lat, coords.lng to return
+          const coords = await geoCoords();
+
+          console.log(coords.lat);
+          console.log(coords.lng);
+
+          // now get opensearch data for coords.lat, coords.lng
+
+          const labels = [ "Alpha", "Beta", "Charlie", "Delta", "Echo",
+                         "Foxtrot", "G", "Helo", "India", "Jack", "KLMNOPQRSTUVWXYZ"];
+
+          const locations = [
+            { lat: 34.189185, lng: -118.6208887 },
+            { lat: 34.192094, lng: -118.6214837 },
+            { lat: 34.185719, lng: -118.6226277 },
+            { lat: 34.193996, lng: -118.6330027 },
+            { lat: 34.191773, lng: -118.6191387 },
+            { lat: 34.192134, lng: -118.6185827 },
+            { lat: 34.18934, lng: -118.6171757 },
+            { lat: 34.194843, lng: -118.6191097 },
+            { lat: 34.190658, lng: -118.6370267 },
+            { lat: 34.198638, lng: -118.6259587 },
+          ];
+
+
+          const map = new google.maps.Map(document.getElementById("container"), {
+            //center: { lat: 34.1895294, lng: -118.624725 },
+            center: { lat: coords.lat, lng: coords.lng },
+            zoom: 15,
+          });
+
+          const infoWindow = new google.maps.InfoWindow({
+            content: "",
+            disableAutoPan: true,
+          });
+
+          //const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+          const markers = locations.map((position, i) => {
+            const label = labels[i % labels.length];
+            const marker = new google.maps.Marker({
+              position,
+              label,
+            });
+
+            marker.addListener("click", () => {
+              infoWindow.setContent(label);
+              infoWindow.open(map, marker);
+            });
+            return marker;
+          });
+
+          new MarkerClusterer({ markers, map });
+
+    } // async function initMap()
+
+/*
+    const labels = [ "Alpha", "Beta", "Charlie", "Delta", "Echo",
+                     "Foxtrot", "G", "Helo", "India", "Jack", "KLMNOPQRSTUVWXYZ"];
+
+    const locations = [
+      { lat: 34.189185, lng: -118.6208887 },
+      { lat: 34.192094, lng: -118.6214837 },
+      { lat: 34.185719, lng: -118.6226277 },
+      { lat: 34.193996, lng: -118.6330027 },
+      { lat: 34.191773, lng: -118.6191387 },
+      { lat: 34.192134, lng: -118.6185827 },
+      { lat: 34.18934, lng: -118.6171757 },
+      { lat: 34.194843, lng: -118.6191097 },
+      { lat: 34.190658, lng: -118.6370267 },
+      { lat: 34.198638, lng: -118.6259587 },
+    ];
+*/
+    window.initMap = initMap;
+
+    history.pushState({page: 'maps'}, "maps", "?view=maps");
+
+}
+
+
+
+// https://stackoverflow.com/questions/51843227/how-to-use-async-wait-with-html5-geolocation-api
+/*
+function getCurrentPosition() {
+    return new Promise( (resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+            position => resolve(position),
+            error => reject(error)
+        )
+    })
+}
+*/
+
+
 
 // https://developers.google.com/maps/documentation/javascript/marker-clustering
 
