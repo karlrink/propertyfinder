@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-09-2b';
+const version = 'propertyfinder.2022-05-09-2c';
 
 /* 
  * SPA (Single-Page Application)
@@ -587,21 +587,77 @@ function viewMaps() {
 
           // now get opensearch data for coords.lat, coords.lng
 
-          const labels = [ "Alpha", "Beta", "Charlie", "Delta", "Echo",
-                         "Foxtrot", "G", "Helo", "India", "Jack", "KLMNOPQRSTUVWXYZ"];
+          const opensearch_data =
+            {
+              "query": {
+                "match_all": {}
+              },
+                "sort": [
+                {
+                  "_geo_distance": {
+                    "coordinate": {
+                      "lat": parseFloat(coords.lat),
+                      "lon": parseFloat(coords.lng)
+                    },
+                    "order": "asc",
+                    "unit": "km",
+                    "mode": "min",
+                    "distance_type": "arc",
+                    "ignore_unmapped": true
+                  }
+                }
+              ]
+            }
 
-          const locations = [
-            { lat: 34.189185, lng: -118.6208887 },
-            { lat: 34.192094, lng: -118.6214837 },
-            { lat: 34.185719, lng: -118.6226277 },
-            { lat: 34.193996, lng: -118.6330027 },
-            { lat: 34.191773, lng: -118.6191387 },
-            { lat: 34.192134, lng: -118.6185827 },
-            { lat: 34.18934, lng: -118.6171757 },
-            { lat: 34.194843, lng: -118.6191097 },
-            { lat: 34.190658, lng: -118.6370267 },
-            { lat: 34.198638, lng: -118.6259587 },
-          ];
+          const url = origin + "/ninfo-property/_search";
+
+          const headers = {};
+          headers['Authorization'] = 'Basic ' + base64;
+          headers['Content-Type'] = 'application/json';
+
+          const post = await fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            headers: headers,
+            body: JSON.stringify(opensearch_data)
+          })
+            .then(getResponse)
+            .catch(err => document.write('Request Failed ', err));
+
+          const response = await post.json();
+
+          const hits = JSON.parse(JSON.stringify(response['hits']['hits']));
+
+          const labels = [];
+          const locations = [];
+
+          for (let hit in hits) {
+
+              let street_address = hits[hit]['_source'].street_address;
+              let latitude       = hits[hit]['_source'].latitude;
+              let longitude      = hits[hit]['_source'].longitude;
+
+              labels.push(street_address);
+              locations.push({"lat": latitude, "lng": longitude});
+          }
+
+
+          //const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+          //const labels = [ "Alpha", "Beta", "Charlie", "Delta", "Echo",
+          //               "Foxtrot", "G", "Helo", "India", "Jack", "KLMNOPQRSTUVWXYZ"];
+
+          //const locations = [
+          //  { lat: 34.189185, lng: -118.6208887 },
+          //  { lat: 34.192094, lng: -118.6214837 },
+          //  { lat: 34.185719, lng: -118.6226277 },
+          //  { lat: 34.193996, lng: -118.6330027 },
+          //  { lat: 34.191773, lng: -118.6191387 },
+          //  { lat: 34.192134, lng: -118.6185827 },
+          //  { lat: 34.18934, lng: -118.6171757 },
+          //  { lat: 34.194843, lng: -118.6191097 },
+          //  { lat: 34.190658, lng: -118.6370267 },
+          //  { lat: 34.198638, lng: -118.6259587 },
+          //];
 
 
           const map = new google.maps.Map(document.getElementById("container"), {
@@ -615,7 +671,6 @@ function viewMaps() {
             disableAutoPan: true,
           });
 
-          //const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
           const markers = locations.map((position, i) => {
             const label = labels[i % labels.length];
