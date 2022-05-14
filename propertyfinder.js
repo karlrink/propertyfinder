@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-09-2c';
+const version = 'propertyfinder.2022-05-14-0-dev.1';
 
 /* 
  * SPA (Single-Page Application)
@@ -14,6 +14,7 @@ const base64 = localStorage.getItem('base64');
 const container = document.getElementById('container');
 
 import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
+
 
 async function getResponse(response) {
     if ( ! response.ok) {
@@ -47,6 +48,7 @@ function Logout() {
     location.replace('?');
 }
 
+
 window.addLocalStore = addLocalStore;
 function addLocalStore() {
    const item_name  = window.prompt("name: ");
@@ -56,45 +58,75 @@ function addLocalStore() {
    location.replace('?view=info');
 }
 
+
 function viewHome() {
 
-    document.title = 'Home';
+    //document.title = 'Home';
 
     let html = '';
 
-    html += `
-    <div class="wrapper">
-        <header class="page-header">
-            <a href="?"><button type="button">Home</button></a>
-        </header>
-        <main class="page-body">
-    `;
-
-
     if ( ! localStorage.getItem('base64') ) {
-        html += '<a href="?login"><button type="button">Login</button></a>';
-    } else {
-        html += '<a href="?view=geosearch"><button type="button">Geo Search</button></a>';
-        html += '<a href="?view=mylocation"><button type="button">My Location</button></a>';
-        html += '<a href="?view=maps"><button type="button">Maps</button></a>';
-    }
 
-    html += `
-        </main>
-        <footer class="page-footer">
-            <a href="?view=info"><button type="button">Info</button></a>
-        </footer>
-    </div>
-    `;
+        document.title = 'Login Required';
+
+        // The <center> tag was used in HTML4 to center-align text. Not Supported in HTML5.
+        // https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align
+
+        html += `
+        <style>
+          div { text-align: center;
+                vertical-align: middle;
+                margin-top: 10%;
+          }
+        </style>
+
+        <div>
+              <a href="?login"><button type="button">Login</button></a>
+        </div>
+        `;
+
+        //history.pushState({page: 'home'}, "home", "?view=home");
+        history.pushState({page: 'home'}, "home", "");
+
+    } else {
+
+        document.title = 'Home';
+
+        html += `
+        <div class="wrapper">
+            <header class="page-header">
+
+                <a href="?"><button type="button">Home</button></a>
+                <a href="?view=geosearch"><button type="button">Geo Search</button></a>
+                <a href="?view=mylocation"><button type="button">My Location</button></a>
+                <a href="?view=geomap"><button type="button">GeoMap</button></a>
+                <a href="?view=maps"><button type="button">Maps</button></a>
+
+            </header>
+            <main class="page-body">
+
+              <label for="property-search"></label>
+              <input type="search" id="property-search" name="property-search"
+                     placeholder="Property search...">
+
+              <button type="button">Search</button>
+
+            </main>
+            <footer class="page-footer">
+                <a href="?view=info"><button type="button">Info</button></a>
+            </footer>
+        </div>
+        `;
+
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/search
+
+        history.pushState({page: 'home'}, "home", "?view=home");
+    }
 
     container.innerHTML = html;
 
-    history.pushState({page: 'home'}, "home", "?view=home");
+    //history.pushState({page: 'home'}, "home", "?view=home");
 }
-
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer
 
 
 function viewInfo() {
@@ -131,9 +163,171 @@ function viewInfo() {
     history.pushState({page: 'info'}, "info", "?view=info");
 }
 
+function viewGeoMap() {
+
+    document.title = 'Geo Map';
+
+    let html = '';
+
+    html += `
+
+    <div class="wrapper">
+        <header class="page-header">
+            <a href="?"><button type="button">Home</button></a>
+            <a href="?view=geomap"><button type="button">Geo Map</button></a>
+        </header>
+        <main class="page-body">
+
+    <form id="form" onsubmit="submitGeoMap(event)">
+      <br>
+      <label for="latitude">latitude:</label>
+      <input type="text" id="latitude" name="latitude" value="34.1895294">
+      <br>
+      <label for="longitude">longitude:</label>
+      <input type="text" id="longitude" name="longitude" value="-118.624725">
+      <br>
+      <button type="submit">Map Coordinates</button>
+    </form>
+
+        </main>
+        <footer class="page-footer">
+        </footer>
+    </div>
+
+    `;
+
+    container.innerHTML = html;
+
+    const form = document.getElementById('form');
+
+    history.pushState({page: 'geomap'}, "geomap", "?view=geomap");
+}
 
 
-// https://developer.mozilla.org/en-US/docs/Learn/Forms/Your_first_form
+window.submitGeoMap = submitGeoMap;
+async function submitGeoMap(event) {
+
+    event.preventDefault();
+
+    const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
+
+    var script_polyfill = document.createElement('script');
+    script_polyfill.src = 'https://polyfill.io/v3/polyfill.min.js?features=default';
+    script_polyfill.async = true;
+
+    var script_googlemaps = document.createElement('script');
+    //script_googlemaps.src = 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap';
+    script_googlemaps.src = `https://maps.googleapis.com/maps/api/js?key=${google_maps_api_key}&callback=initMap`;
+    script_googlemaps.async = true;
+
+    //var script_markerclusterer = document.createElement('script');
+    //script_markerclusterer.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js';
+    //script_markerclusterer.async = true;
+    //import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
+
+    document.head.appendChild(script_polyfill);
+    document.head.appendChild(script_googlemaps);
+
+    const latitude = event.target['latitude'].value;
+    const longitude = event.target['longitude'].value;
+
+    console.log(latitude);
+    console.log(longitude);
+
+    const opensearch_data =
+    {
+      "query": {
+        "match_all": {}
+      },
+        "sort": [
+        {
+          "_geo_distance": {
+            "coordinate": {
+              "lat": parseFloat(latitude),
+              "lon": parseFloat(longitude)
+            },
+            "order": "asc",
+            "unit": "km",
+            "mode": "min",
+            "distance_type": "arc",
+            "ignore_unmapped": true
+          }
+        }
+      ]
+    }
+
+    const url = origin + "/ninfo-property/_search";
+
+    const headers = {};
+    headers['Authorization'] = 'Basic ' + base64;
+    headers['Content-Type'] = 'application/json';
+
+    async function initMap() {
+
+        const post = await fetch(url, {
+          method: 'POST',
+          mode: 'cors',
+          headers: headers,
+          body: JSON.stringify(opensearch_data)
+        })
+          .then(getResponse)
+          .catch(err => document.write('Request Failed ', err));
+
+        const response = await post.json();
+
+        const hits = JSON.parse(JSON.stringify(response['hits']['hits']));
+
+        const labels = [];
+        const locations = [];
+
+        for (let hit in hits) {
+
+            let street_address_hit = hits[hit]['_source'].street_address;
+            let latitude_hit       = hits[hit]['_source'].latitude;
+            let longitude_hit      = hits[hit]['_source'].longitude;
+
+            labels.push(street_address_hit);
+            locations.push({"lat": latitude_hit, "lng": longitude_hit});
+        }
+
+        //console.log(latitude);
+        //console.log(longitude);
+
+        const map = new google.maps.Map(document.getElementById("container"), {
+            //center: { lat: 34.1895294, lng: -118.624725 },
+            center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+            zoom: 15,
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: "",
+            disableAutoPan: true,
+        });
+
+        const markers = locations.map((position, i) => {
+                const label = labels[i % labels.length];
+                const marker = new google.maps.Marker({
+                  position,
+                  label,
+                });
+
+                marker.addListener("click", () => {
+                  infoWindow.setContent(label);
+                  infoWindow.open(map, marker);
+                });
+                return marker;
+        });
+
+        new MarkerClusterer({ markers, map });
+
+    } //async function initMap
+
+
+    window.initMap = initMap;
+    history.pushState({page: 'geomap'}, "geomap-submit", "?view=geomap&submit=true");
+}
+
+
 function viewGeoSearch() {
 
     document.title = 'Geo Search';
@@ -237,9 +431,6 @@ function viewGeoSearch() {
     history.pushState({page: 'geosearch'}, "geosearch", "?view=geosearch");
 }
 
-//-----------------------------------------------------------
-
-// https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API/Using_the_Geolocation_API
 
 function viewMyLocation() {
 
@@ -327,14 +518,7 @@ function geoFindMe() {
 
 }
 
-//export default async function submitGeoForm(event) {
-//const doAction = () =>
-//const submitGeoForm = async (event) => {
-// https://stackoverflow.com/questions/5067887/function-is-not-defined-uncaught-referenceerror
-// https://stackoverflow.com/questions/52785120/function-in-my-javascript-module-is-not-defined
-// window.onload = function() { ... }
 
-// https://stackoverflow.com/questions/30803497/onsubmit-function-is-not-defined
 window.submitGeoForm = submitGeoForm;
 
 async function submitGeoForm(event) {
@@ -457,94 +641,9 @@ async function submitGeoForm(event) {
 }
 
 
-// https://developers.google.com/maps/documentation/javascript/overview  
-// https://developers.google.com/maps/documentation/javascript?hl=en_US
-// https://developers.google.com/maps/documentation/javascript/overview
-
-
-function viewMaps_v1() {
-
-    document.title = 'Maps';
-
-    const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
-
-    var script_polyfill = document.createElement('script');
-    script_polyfill.src = 'https://polyfill.io/v3/polyfill.min.js?features=default';
-    script_polyfill.async = true;
-
-    var script_googlemaps = document.createElement('script');
-    //script_googlemaps.src = 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap';
-    script_googlemaps.src = `https://maps.googleapis.com/maps/api/js?key=${google_maps_api_key}&callback=initMap`;
-    script_googlemaps.async = true;
-
-    //var script_markerclusterer = document.createElement('script');
-    //script_markerclusterer.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js';
-    //script_markerclusterer.async = true;
-    //import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
-
-    document.head.appendChild(script_polyfill);
-    document.head.appendChild(script_googlemaps);
-    //document.head.appendChild(script_markerclusterer);
-
-    function initMap() {
-     
-      const map = new google.maps.Map(document.getElementById("container"), {
-        center: { lat: 34.1895294, lng: -118.624725 },
-        zoom: 15,
-      });
-
-      const infoWindow = new google.maps.InfoWindow({
-        content: "",
-        disableAutoPan: true,
-      });
-
-      //const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-      const markers = locations.map((position, i) => {
-        const label = labels[i % labels.length];
-        const marker = new google.maps.Marker({
-          position,
-          label,
-        });
-
-        marker.addListener("click", () => {
-          infoWindow.setContent(label);
-          infoWindow.open(map, marker);
-        });
-        return marker;
-      });
-
-      //const markerCluster = new markerClusterer.MarkerClusterer({ map, markers });
-      new MarkerClusterer({ markers, map });
-
-    }
-
-    const labels = [ "Alpha", "Beta", "Charlie", "Delta", "Echo",
-                     "Foxtrot", "G", "Helo", "India", "Jack", "KLMNOPQRSTUVWXYZ"];
-
-    const locations = [
-      { lat: 34.189185, lng: -118.6208887 },
-      { lat: 34.192094, lng: -118.6214837 },
-      { lat: 34.185719, lng: -118.6226277 },
-      { lat: 34.193996, lng: -118.6330027 },
-      { lat: 34.191773, lng: -118.6191387 },
-      { lat: 34.192134, lng: -118.6185827 },
-      { lat: 34.18934, lng: -118.6171757 },
-      { lat: 34.194843, lng: -118.6191097 },
-      { lat: 34.190658, lng: -118.6370267 },
-      { lat: 34.198638, lng: -118.6259587 },
-    ];
-
-    window.initMap = initMap;
-
-    history.pushState({page: 'maps'}, "maps", "?view=maps");
-
-}
-
-
 function viewMaps() {
 
-    document.title = 'Maps v2';
+    document.title = 'viewMaps.v2';
 
     const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
 
@@ -641,25 +740,6 @@ function viewMaps() {
               locations.push({"lat": latitude, "lng": longitude});
           }
 
-
-          //const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-          //const labels = [ "Alpha", "Beta", "Charlie", "Delta", "Echo",
-          //               "Foxtrot", "G", "Helo", "India", "Jack", "KLMNOPQRSTUVWXYZ"];
-
-          //const locations = [
-          //  { lat: 34.189185, lng: -118.6208887 },
-          //  { lat: 34.192094, lng: -118.6214837 },
-          //  { lat: 34.185719, lng: -118.6226277 },
-          //  { lat: 34.193996, lng: -118.6330027 },
-          //  { lat: 34.191773, lng: -118.6191387 },
-          //  { lat: 34.192134, lng: -118.6185827 },
-          //  { lat: 34.18934, lng: -118.6171757 },
-          //  { lat: 34.194843, lng: -118.6191097 },
-          //  { lat: 34.190658, lng: -118.6370267 },
-          //  { lat: 34.198638, lng: -118.6259587 },
-          //];
-
-
           const map = new google.maps.Map(document.getElementById("container"), {
             //center: { lat: 34.1895294, lng: -118.624725 },
             center: { lat: coords.lat, lng: coords.lng },
@@ -690,60 +770,16 @@ function viewMaps() {
 
     } // async function initMap()
 
-/*
-    const labels = [ "Alpha", "Beta", "Charlie", "Delta", "Echo",
-                     "Foxtrot", "G", "Helo", "India", "Jack", "KLMNOPQRSTUVWXYZ"];
-
-    const locations = [
-      { lat: 34.189185, lng: -118.6208887 },
-      { lat: 34.192094, lng: -118.6214837 },
-      { lat: 34.185719, lng: -118.6226277 },
-      { lat: 34.193996, lng: -118.6330027 },
-      { lat: 34.191773, lng: -118.6191387 },
-      { lat: 34.192134, lng: -118.6185827 },
-      { lat: 34.18934, lng: -118.6171757 },
-      { lat: 34.194843, lng: -118.6191097 },
-      { lat: 34.190658, lng: -118.6370267 },
-      { lat: 34.198638, lng: -118.6259587 },
-    ];
-*/
     window.initMap = initMap;
 
-    history.pushState({page: 'maps'}, "maps", "?view=maps");
+    history.pushState({page: 'maps'}, "maps", "?view=maps&true");
 
 }
-
-
-
-// https://stackoverflow.com/questions/51843227/how-to-use-async-wait-with-html5-geolocation-api
-/*
-function getCurrentPosition() {
-    return new Promise( (resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-            position => resolve(position),
-            error => reject(error)
-        )
-    })
-}
-*/
-
-
-
-// https://developers.google.com/maps/documentation/javascript/marker-clustering
-
-
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre
-
-//-----------------------------------------------------------
 
 // This function takes in latitude and longitude of two location 
 // and returns the distance between them as the crow flies (in km)
 // https://en.wikipedia.org/wiki/Haversine_formula
-function HaverSine(lat1, lon1, lat2, lon2) 
-{
+function HaverSine(lat1, lon1, lat2, lon2) {
   var R = 6371; // km
   var dLat = toRad(lat2-lat1);
   var dLon = toRad(lon2-lon1);
@@ -758,16 +794,12 @@ function HaverSine(lat1, lon1, lat2, lon2)
 }
 
 // Converts numeric degrees to radians
-function toRad(Value) 
-{
+function toRad(Value) {
     return Value * Math.PI / 180;
 }
 //alert(HaverSine(59.3293371,13.4877472,59.3225525,13.4619422).toFixed(1));
 
 //-----------------------------------------------------------
-
-// https://developer.mozilla.org/en-US/docs/Web/API/URL
-// https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
 
 //const location_href = new URL(location.href);
 const params = new URLSearchParams(location.search);
@@ -801,15 +833,21 @@ function router() {
             return viewGeoSearch();
         }
 
+        if (view === 'geomap') {
+            return viewGeoMap();
+        }
+
         if (view === 'maps') {
             return viewMaps();
         }
 
     }
 
+    /*
     if ( ! localStorage.getItem('base64') ) {
       return Login();
     }
+    */
 
     return viewHome();
 }
