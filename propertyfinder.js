@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-14-0-dev.1';
+const version = 'propertyfinder.2022-05-14-0-dev.2';
 
 /* 
  * SPA (Single-Page Application)
@@ -14,6 +14,14 @@ const base64 = localStorage.getItem('base64');
 const container = document.getElementById('container');
 
 import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
+
+const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
+/* google_maps_api_key
+  this is a hard coded key that is restricted at/by the provider (google)
+  you can get your own key and find out more regarding restricted api keys
+  https://developers.google.com/maps/documentation/javascript/get-api-key
+  https://developers.google.com/maps/api-security-best-practices
+*/
 
 
 async function getResponse(response) {
@@ -209,7 +217,7 @@ async function submitGeoMap(event) {
 
     event.preventDefault();
 
-    const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
+    //const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
 
     var script_polyfill = document.createElement('script');
     script_polyfill.src = 'https://polyfill.io/v3/polyfill.min.js?features=default';
@@ -279,6 +287,8 @@ async function submitGeoMap(event) {
 
         const labels = [];
         const locations = [];
+        const details = {};
+        let count = 0;
 
         for (let hit in hits) {
 
@@ -286,8 +296,87 @@ async function submitGeoMap(event) {
             let latitude_hit       = hits[hit]['_source'].latitude;
             let longitude_hit      = hits[hit]['_source'].longitude;
 
+            let amount_hit         = hits[hit]['_source'].amount;
+            let rent_hit           = hits[hit]['_source'].rent;
+
+            // rent: 6400 
+            // there is also sale_type: Rental 
+
+            let pool_hit           = hits[hit]['_source'].pool;
+
             labels.push(street_address_hit);
+
+            //labels.push(String(amount_hit));
+
             locations.push({"lat": latitude_hit, "lng": longitude_hit});
+
+            let currency_us = (amount_hit).toLocaleString('en-US', {
+                                  style: 'currency',
+                                  currency: 'USD',
+                                  minimumFractionDigits: 0,
+                                  maximumFractionDigits: 0
+            });
+
+            let rent_or_sale = '';
+            if (rent_hit !== null) {
+                rent_or_sale = '💳';
+            } else {
+                //rent_or_sale = '💰';
+                rent_or_sale = '💵';
+            }
+
+
+            let has_pool = '';
+            if (pool_hit !== null) {
+                has_pool = '🏊';
+            } else {
+                has_pool = '';
+            }
+
+
+            let htmlSegment = '';
+
+            htmlSegment += `
+            <div>
+            <details closed>
+
+              <summary>
+
+               ${rent_or_sale} ${currency_us} ${has_pool} <br>
+
+              </summary>
+
+              <p>
+            `;
+
+            for (let item in hits[hit]['_source']){
+
+                let value = hits[hit]['_source'][item];
+
+                if (value !== null) {
+
+                    if (item == 'picture_data_source_url') {
+                        
+                        htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+
+                    } else {
+
+                        htmlSegment += ` ${item}: ${value} <br>`;
+                    }
+                }
+
+            }
+
+            htmlSegment += `
+              </p>
+            </details>
+            </div>
+            `;
+
+
+            details[count] = htmlSegment;
+
+            count += 1;
         }
 
         //console.log(latitude);
@@ -305,15 +394,39 @@ async function submitGeoMap(event) {
         });
 
         const markers = locations.map((position, i) => {
+
+                //console.log('this is i ' + i);
+
                 const label = labels[i % labels.length];
+
+                //const detail = details[
+
+                //const label = 'who do';
+
                 const marker = new google.maps.Marker({
                   position,
                   label,
                 });
 
                 marker.addListener("click", () => {
-                  infoWindow.setContent(label);
+
+                  //infoWindow.setContent(label);
+                  //infoWindow.setContent('jo jo here');
+
+                  //const htmlContent = `
+                  //<div>
+                  //  <h1>hello</h1>
+                  //  <div>
+                  //    <p>Wow data</p>
+                  //  </div>
+                  //</div>
+                  //`;
+
+                  const htmlContent = details[i];
+
+                  infoWindow.setContent(htmlContent);
                   infoWindow.open(map, marker);
+
                 });
                 return marker;
         });
@@ -327,6 +440,16 @@ async function submitGeoMap(event) {
     history.pushState({page: 'geomap'}, "geomap-submit", "?view=geomap&submit=true");
 }
 
+// https://developers.google.com/maps/documentation/javascript/examples/infowindow-simple-max
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
+
+// sale
+// rent
+
+// 💸 money w/ wings
+// 💰 money
+// 💳 credit card
+// 💲 dollar sign
 
 function viewGeoSearch() {
 
@@ -645,7 +768,7 @@ function viewMaps() {
 
     document.title = 'viewMaps.v2';
 
-    const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
+    //const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
 
     var script_polyfill = document.createElement('script');
     script_polyfill.src = 'https://polyfill.io/v3/polyfill.min.js?features=default';
