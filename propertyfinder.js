@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-14-0-dev.2';
+const version = 'propertyfinder.2022-05-14-0-dev.3';
 
 /* 
  * SPA (Single-Page Application)
@@ -355,14 +355,54 @@ async function submitGeoMap(event) {
 
                 if (value !== null) {
 
-                    if (item == 'picture_data_source_url') {
-                        
-                        htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch
 
-                    } else {
+                    switch (item) {
+
+                      case 'picture_data_source_url':
+                          htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                          break;
+
+                      case 'picture_data_url':
+                          // picture_data_url: /local_images/4ea/4eab11c9aa3dca632472e598a9bbb0ad8c0d3ea9.jpg 
+                          // https://ninfo-property-images.s3.us-west-2.amazonaws.com/4eab11c9aa3dca632472e598a9bbb0ad8c0d3ea9.jpg
+
+                          //console.log(value.split())
+
+                          //let image_file = '4eab11c9aa3dca632472e598a9bbb0ad8c0d3ea9.jpg';
+
+                          let image_file = value.split('/').slice(-1);
+                          let public_url = 'https://ninfo-property-images.s3.us-west-2.amazonaws.com/' + image_file;
+
+                          //console.log(public_url);
+
+                          htmlSegment += ` ${item}: <a href="${public_url}" target="_blank">${value}</a> <br>`;
+                          break;
+
+                      case 'source_url':
+                          htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                          break;
+
+                      case 'coordinate':
+                          htmlSegment += ` ${item}: <a href="https://maps.google.com/maps?q=${latitude_hit},${longitude_hit}" target="_blank">${latitude_hit}°,${longitude_hit}°</a> <br>`;
+                          break;
+
+                      default:
 
                         htmlSegment += ` ${item}: ${value} <br>`;
                     }
+
+                    //mapLink.href = `https://maps.google.com/maps?q=${latitude},${longitude}`;
+                    //mapLink.textContent = `📍 ${latitude}°,${longitude}°`;
+
+
+                    /*
+                    if (item == 'picture_data_source_url') {
+                        htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                    } else {
+                        htmlSegment += ` ${item}: ${value} <br>`;
+                    }
+                    */
                 }
 
             }
@@ -766,9 +806,7 @@ async function submitGeoForm(event) {
 
 function viewMaps() {
 
-    document.title = 'viewMaps.v2';
-
-    //const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
+    document.title = 'Property Maps';
 
     var script_polyfill = document.createElement('script');
     script_polyfill.src = 'https://polyfill.io/v3/polyfill.min.js?features=default';
@@ -852,15 +890,107 @@ function viewMaps() {
 
           const labels = [];
           const locations = [];
+          const details = {};
+          let count = 0;
 
           for (let hit in hits) {
 
-              let street_address = hits[hit]['_source'].street_address;
-              let latitude       = hits[hit]['_source'].latitude;
-              let longitude      = hits[hit]['_source'].longitude;
+              let street_address_hit = hits[hit]['_source'].street_address;
+              let latitude_hit       = hits[hit]['_source'].latitude;
+              let longitude_hit      = hits[hit]['_source'].longitude;
 
-              labels.push(street_address);
-              locations.push({"lat": latitude, "lng": longitude});
+              let amount_hit         = hits[hit]['_source'].amount;
+              let rent_hit           = hits[hit]['_source'].rent;
+              let pool_hit           = hits[hit]['_source'].pool;
+
+              let currency_us = (amount_hit).toLocaleString('en-US', {
+                                  style: 'currency',
+                                  currency: 'USD',
+                                  minimumFractionDigits: 0,
+                                  maximumFractionDigits: 0
+              });
+
+              let rent_or_sale = '';
+              if (rent_hit !== null) {
+                  rent_or_sale = '💳';
+              } else {
+                  rent_or_sale = '💵';
+              }
+
+
+              let has_pool = '';
+              if (pool_hit !== null) {
+                  has_pool = '🏊';
+              } else {
+                  has_pool = '';
+              }
+
+              let htmlSegment = '';
+
+              htmlSegment += `
+              <div>
+              <details closed>
+
+                <summary>
+
+                 ${rent_or_sale} ${currency_us} ${has_pool} <br>
+
+                </summary>
+
+                <p>
+              `;
+
+              for (let item in hits[hit]['_source']){
+
+                  let value = hits[hit]['_source'][item];
+
+                  if (value !== null) {
+
+                      switch (item) {
+
+                        case 'picture_data_source_url':
+                            htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                            break;
+  
+                        case 'picture_data_url':
+                          // picture_data_url: /local_images/4ea/4eab11c9aa3dca632472e598a9bbb0ad8c0d3ea9.jpg 
+                          // https://ninfo-property-images.s3.us-west-2.amazonaws.com/4eab11c9aa3dca632472e598a9bbb0ad8c0d3ea9.jpg
+
+                            let image_file = value.split('/').slice(-1);
+                            let public_url = 'https://ninfo-property-images.s3.us-west-2.amazonaws.com/' + image_file;
+  
+                            htmlSegment += ` ${item}: <a href="${public_url}" target="_blank">${value}</a> <br>`;
+                            break;
+
+                        case 'source_url':
+                            htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                            break;
+
+                        case 'coordinate':
+                            htmlSegment += ` ${item}: <a href="https://maps.google.com/maps?q=${latitude_hit},${longitude_hit}" 
+                                                         target="_blank">${latitude_hit}°,${longitude_hit}°</a> <br>`;
+                            break;
+
+                        default:
+
+                          htmlSegment += ` ${item}: ${value} <br>`;
+                      }
+
+                  }
+
+              }
+
+              htmlSegment += `
+                </p>
+              </details>
+              </div>
+              `;
+
+
+              labels.push(street_address_hit);
+              locations.push({"lat": latitude_hit, "lng": longitude_hit});
+              details[count] = htmlSegment;
+              count += 1;
           }
 
           const map = new google.maps.Map(document.getElementById("container"), {
@@ -883,8 +1013,12 @@ function viewMaps() {
             });
 
             marker.addListener("click", () => {
-              infoWindow.setContent(label);
+
+              const htmlContent = details[i];
+
+              infoWindow.setContent(htmlContent);
               infoWindow.open(map, marker);
+
             });
             return marker;
           });
