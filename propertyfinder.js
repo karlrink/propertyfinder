@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-14';
+const version = 'propertyfinder.2022-05-15-0';
 
 /* 
  * SPA (Single-Page Application)
@@ -100,86 +100,17 @@ function viewHome() {
 
         document.title = 'Home';
 
-/*
-        html += `
-        <div class="wrapper">
-            <header class="page-header">
-
-                <a href="?"><button type="button">Home</button></a>
-                <a href="?view=geosearch"><button type="button">Geo Search</button></a>
-                <a href="?view=mylocation"><button type="button">My Location</button></a>
-                <a href="?view=geomap"><button type="button">GeoMap</button></a>
-                <a href="?view=maps"><button type="button">Maps</button></a>
-
-            </header>
-            <main class="page-body">
-
+        let htmlSegment = `
+        <div class="margin-top-100px">
               <label for="property-search"></label>
               <input type="search" id="property-search" name="property-search"
                      placeholder="Property search...">
 
               <button type="button">Search</button>
-
-            </main>
-            <footer class="page-footer">
-                <a href="?view=info"><button type="button">Info</button></a>
-            </footer>
         </div>
         `;
-*/
 
-        html += `
-
-<nav class="menu" style="--hue: 248.9758276163942">
-  <input class="menu__toggle" id="menu-toggle" type="checkbox"/>
-  <label class="menu__toggle-label" for="menu-toggle"></label>
-  <label class="menu__toggle-label menu__toggle-label--closer" for="menu-toggle">
-    <svg class="menu__icon" preserveAspectRatio="xMinYMin" viewBox="0 0 24 24">
-      <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"></path>
-    </svg>
-    <svg class="menu__icon" preserveAspectRatio="xMinYMin" viewBox="0 0 24 24">
-      <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path>
-    </svg>
-  </label>
-  <ul class="menu__content">
-    <li class="menu__item" style="--x: 35; --y: 21;"><a class="menu__link" href="?">HOME</a></li>
-    <li class="menu__item" style="--x: 52; --y: 33;"><a class="menu__link" href="#ABOUT">ABOUT</a></li>
-    <li class="menu__item" style="--x: 26; --y: 61;"><a class="menu__link" href="#CONTACT">CONTACT</a></li>
-    <li class="menu__item" style="--x: 72; --y: 53;"><a class="menu__link" href="?view=maps">Maps</a></li>
-  </ul>
-</nav>
-
-<main>
-
-<!--
-  <section id="HOME">HOME</section>
-  <section id="ABOUT">ABOUT</section>
-  <section id="CONTACT">CONTACT</section>
-  <section id="WORK">WORK</section>
--->
-
-              <label for="property-search"></label>
-              <input type="search" id="property-search" name="property-search"
-                     placeholder="Property search...">
-
-              <button type="button">Search</button>
-
-
-</main>
-
-<svg style="position: absolute; left: 100%">
-  <defs>
-    <filter id="goo">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="BLUR"></feGaussianBlur>
-      <feColorMatrix in="BLUR" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="GOO"></feColorMatrix>
-      <feBlend in="SourceGraphic" in2="goo"></feBlend>
-    </filter>
-  </defs>
-</svg>
-
-        `;
-
-
+        html = TopHTML + htmlSegment + BottomHTML;
 
         history.pushState({page: 'home'}, "home", "?view=home");
     }
@@ -195,11 +126,7 @@ function viewInfo() {
     let html = '';
 
     html += `
-    <div class="wrapper">
-        <header class="page-header">
-            <a href="?"><button type="button">Home</button></a>
-        </header>
-        <main class="page-body">
+    <div class="margin-top-100px">
     `;
 
 
@@ -208,11 +135,11 @@ function viewInfo() {
         html += '<div>' + a + '<input type="text" value="'+ localStorage[a] +'" disabled ></div>';
     }
 
-    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button
 
     html += `
-        </main>
-        <footer class="page-footer">
+    </div>
+    <div class="margin-top-10px">
+        <footer>
             <button type="button" onclick="return addLocalStore();">Add Item</button>
             <button type="button" onclick="localStorage.clear();location.reload();">Clear Storage</button>
             <button type="button" onclick="return Login();">Login</button>
@@ -221,7 +148,7 @@ function viewInfo() {
     </div>
     `;
 
-    container.innerHTML = html;
+    container.innerHTML = TopHTML + html + BottomHTML;
 
     history.pushState({page: 'info'}, "info", "?view=info");
 }
@@ -234,12 +161,7 @@ function viewGeoMap() {
 
     html += `
 
-    <div class="wrapper">
-        <header class="page-header">
-            <a href="?"><button type="button">Home</button></a>
-            <a href="?view=geomap"><button type="button">Geo Map</button></a>
-        </header>
-        <main class="page-body">
+    <div class="margin-top-100px">
 
     <form id="form" onsubmit="submitGeoMap(event)">
       <br>
@@ -252,14 +174,11 @@ function viewGeoMap() {
       <button type="submit">Map Coordinates</button>
     </form>
 
-        </main>
-        <footer class="page-footer">
-        </footer>
     </div>
 
     `;
 
-    container.innerHTML = html;
+    container.innerHTML = TopHTML + html + BottomHTML;
 
     const form = document.getElementById('form');
 
@@ -550,20 +469,13 @@ function viewGeoSearch() {
 
     document.title = 'Geo Search';
 
-    //const url = "https://opensearch.nationsinfocorp.com/ninfo-property/_search"
     const url = origin + "/ninfo-property/_search"
 
     let html = '';
 
     html += `
-    <div class="wrapper">
-        <header class="page-header">
-            <a href="?"><button type="button">Home</button></a>
-            <a href="?view=geosearch"><button type="button">Geo Search</button></a>
-        </header>
-        <main class="page-body">
+    <div class="margin-top-100px">
     `;
-
 
     html += `
     <form id="form" action="${url}" method="post">
@@ -582,13 +494,10 @@ function viewGeoSearch() {
     `;
 
     html += `
-        </main>
-        <footer class="page-footer">
-        </footer>
     </div>
     `;
 
-    container.innerHTML = html;
+    container.innerHTML = TopHTML + html + BottomHTML;
 
     const form = document.getElementById('form');
 
@@ -657,12 +566,7 @@ function viewMyLocation() {
     let html = '';
 
     html += `
-    <div class="wrapper">
-        <header class="page-header">
-            <a href="?"><button type="button">Home</button></a>
-            <a href="?view=mylocation"><button type="button">My Location</button></a>
-        </header>
-        <main class="page-body">
+    <div class="margin-top-100px">
     `;
 
     html += '<button id="find-me" type="button">Get My Location</button><br/>';
@@ -672,13 +576,10 @@ function viewMyLocation() {
     html += '<div id="geo-output"></div>';
 
     html += `
-        </main>
-        <footer class="page-footer">
-        </footer>
     </div>
     `;
 
-    container.innerHTML = html;
+    container.innerHTML = TopHTML + html + BottomHTML;
 
     document.querySelector('#find-me').addEventListener('click', geoFindMe);
 
@@ -1176,6 +1077,50 @@ window.addEventListener('hashchange', function(event) {
   console.log('hashchange');
 });
 */
+
+//-----------------------------------------------------------
+
+/* this is the layout section */
+
+const TopHTML = `
+<nav class="menu" style="--hue: 248.9758276163942">
+  <input class="menu__toggle" id="menu-toggle" type="checkbox"/>
+  <label class="menu__toggle-label" for="menu-toggle"></label>
+  <label class="menu__toggle-label menu__toggle-label--closer" for="menu-toggle">
+    <svg class="menu__icon" preserveAspectRatio="xMinYMin" viewBox="0 0 24 24">
+      <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"></path>
+    </svg>
+    <svg class="menu__icon" preserveAspectRatio="xMinYMin" viewBox="0 0 24 24">
+      <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path>
+    </svg>
+  </label>
+  <ul class="menu__content">
+    <li class="menu__item" style="--x: 10; --y: 21;"><a class="menu__link" href="?">Home</a></li>
+    <li class="menu__item" style="--x: 52; --y: 33;"><a class="menu__link" href="?view=geosearch">Geo Search</a></li>
+    <li class="menu__item" style="--x: 30; --y: 58;"><a class="menu__link" href="?view=mylocation">My Location</a></li>
+    <li class="menu__item" style="--x: 72; --y: 53;"><a class="menu__link" href="?view=geomap">GeoMap</a></li>
+    <li class="menu__item" style="--x: 72; --y: 10;"><a class="menu__link" href="?view=maps">Maps</a></li>
+    <li class="menu__item" style="--x: 10; --y: 84;"><a class="menu__link" href="?view=info">Info</a></li>
+  </ul>
+</nav>
+<main>
+`;
+
+// main <main></main> in the middle
+
+const BottomHTML = `
+</main>
+<svg style="position: absolute; left: 100%">
+  <defs>
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="BLUR"></feGaussianBlur>
+      <feColorMatrix in="BLUR" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="GOO"></feColorMatrix>
+      <feBlend in="SourceGraphic" in2="goo"></feBlend>
+    </filter>
+  </defs>
+</svg>
+`;
+
 
 //-----------------------------------------------------------
 
