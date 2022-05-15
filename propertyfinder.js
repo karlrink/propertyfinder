@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-14-0-dev.3';
+const version = 'propertyfinder.2022-05-14';
 
 /* 
  * SPA (Single-Page Application)
@@ -155,13 +155,15 @@ function viewInfo() {
         html += '<div>' + a + '<input type="text" value="'+ localStorage[a] +'" disabled ></div>';
     }
 
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button
+
     html += `
         </main>
         <footer class="page-footer">
-            <button onclick="return addLocalStore();">Add Item</button>
-            <button onclick="localStorage.clear();location.reload();">Clear Storage</button>
-            <button onclick="return Login();">Login</button>
-            <button onclick="return Logout();">Logout</button>
+            <button type="button" onclick="return addLocalStore();">Add Item</button>
+            <button type="button" onclick="localStorage.clear();location.reload();">Clear Storage</button>
+            <button type="button" onclick="return Login();">Login</button>
+            <button type="button" onclick="return Logout();">Logout</button>
         </footer>
     </div>
     `;
@@ -610,7 +612,7 @@ function viewMyLocation() {
         <main class="page-body">
     `;
 
-    html += '<button id="find-me">Get My Location</button><br/>';
+    html += '<button id="find-me" type="button">Get My Location</button><br/>';
     html += '<p id="status"></p>';
     html += '<a id="map-link" target="_blank"></a>';
     html += '<div id="geo-form"></div>';

@@ -31,6 +31,12 @@ body {
 section {
     height: 100%
 }
+
+h2 {
+  margin: 25px 0 10px;
+  font-size: 20px;
+}
+
 /*    
     padding: 15px;
 */
@@ -38,7 +44,7 @@ section {
 button[type="button"] {
     font-family: Helvetica ;
     font-weight: bold ;
-    padding: 10px;
+    padding: 15px;
     border: 1px solid black ;
     -moz-border-radius: 8px ;
     -webkit-border-radius: 8px ;
@@ -47,6 +53,20 @@ button[type="button"] {
     margin-bottom: 10px ;
     background-color: white ;
 }
+
+button[type="submit"] {
+    font-family: Helvetica ;
+    font-weight: bold ;
+    padding: 15px;
+    border: 1px solid black ;
+    -moz-border-radius: 8px ;
+    -webkit-border-radius: 8px ;
+    -webkit-appearance: none !important;
+    margin-top: 10px ;
+    margin-bottom: 10px ;
+    background-color: white ;
+}
+
 
 input[type="search"] {
     font-size: 20px;
