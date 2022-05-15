@@ -1,4 +1,5 @@
 
+/* https://developer.mozilla.org/en-US/docs/Web/CSS */
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/Layout_cookbook */
 /* https://github.com/mdn/css-examples/blob/master/css-cookbook/sticky-footer--download.html */
 
@@ -26,6 +27,7 @@ section {
     height: 100%
 }
 
+/* class="wrapper" */
 .wrapper {
     min-height: 100%;
     display: grid;
@@ -57,6 +59,19 @@ section {
     margin-left: auto;
 }
 
+.button {
+ font-family: Helvetica ;
+ font-weight: bold ;
+ padding: 15px;
+ border: 1px solid black ;
+ -moz-border-radius: 8px ;
+ -webkit-border-radius: 8px ;
+ margin-top: 10px ;
+ margin-bottom: 10px ;
+ background-color: white ;
+}
+
+
 /* https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details */
 
 /*
@@ -65,6 +80,7 @@ section {
  */
 
 /* 
+id="map"
 #map {
   height: 100%;
 }
@@ -73,6 +89,80 @@ section {
 #container {
   height: 100%;
 }
+
+#progress {
+    -webkit-border-radius: 10px;
+    background-color: rgba(0,0,0,.7);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    height: 80px;
+    left: 60px;
+    line-height: 80px;
+    margin: 0 auto;
+    position: absolute;
+    text-align: center;
+    top: 120px;
+    width: 200px;
+}
+
+/* CSS Statements that only apply on webkit-based browsers (Chrome, Safari, etc.) 
+ @media screen and (-webkit-min-device-pixel-ratio: 0) { 
+
+ https://developer.mozilla.org/en-US/docs/Web/CSS/@media 
+ https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries
+
+ https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
+
+ https://developer.mozilla.org/en-US/docs/Web/CSS/@supports 
+*/
+
+@media screen and (max-width: 480px) {
+  body {
+    background: #ccc;
+  }
+
+ button {
+   font-family: Helvetica ;
+   font-weight: bold ;
+   padding: 15px;
+   border: 1px solid black ;
+   -moz-border-radius: 8px ;
+   -webkit-border-radius: 8px ;
+   margin-top: 10px ;
+   margin-bottom: 10px ;
+   background-color: white ;
+ }
+}
+
+/* Safari 11+ */
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+    selector {
+        property:value;
+    }
+  }
+}
+/* Test website on real Safari 11+ */
+
+/* Safari 10.1 */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) and (not (stroke-color:transparent)) {
+    selector {
+      property:value;
+    }
+  }
+}
+
+/* Safari 6.1-10.0 (but not 10.1) */
+@media screen and (min-color-index:0) and (-webkit-min-device-pixel-ratio:0) {
+  @media {
+    selector {
+      property:value;
+    }
+  }
+}
+
 
 
 
