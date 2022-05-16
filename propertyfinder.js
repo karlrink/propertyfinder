@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-15';
+const version = 'propertyfinder 2022-05-15 v1';
 
 /* 
  * SPA (Single-Page Application)
@@ -546,7 +546,9 @@ function viewGeoSearch() {
           .catch(err => container.innerHTML = err);
 
         //alert(JSON.stringify(items, null, 2));
-        container.innerHTML = "<pre>" + JSON.stringify(items, null, 2) + "</pre>";
+        let htmlSegment = "<pre>" + JSON.stringify(items, null, 2) + "</pre>";
+
+        container.innerHTML = TopHTML + htmlSegment + BottomHTML;
 
       }
 
@@ -1100,10 +1102,10 @@ const TopHTML = `
   </label>
   <ul class="menu__content">
     <li class="menu__item" style="--x: 10; --y: 21;"><a class="menu__link" href="?">Home</a></li>
-    <li class="menu__item" style="--x: 52; --y: 33;"><a class="menu__link" href="?view=geosearch">Geo Search</a></li>
+    <li class="menu__item" style="--x: 52; --y: 33;"><a class="menu__link" href="?view=geosearch">Geo Distance Search</a></li>
     <li class="menu__item" style="--x: 30; --y: 58;"><a class="menu__link" href="?view=mylocation">My Location</a></li>
-    <li class="menu__item" style="--x: 72; --y: 53;"><a class="menu__link" href="?view=geomap">GeoMap</a></li>
-    <li class="menu__item" style="--x: 72; --y: 10;"><a class="menu__link" href="?view=maps">Maps</a></li>
+    <li class="menu__item" style="--x: 72; --y: 53;"><a class="menu__link" href="?view=geomap">Map Coordinate</a></li>
+    <li class="menu__item" style="--x: 72; --y: 10;"><a class="menu__link" href="?view=maps">Map</a></li>
     <li class="menu__item" style="--x: 10; --y: 84;"><a class="menu__link" href="?view=info">Info</a></li>
   </ul>
 </nav>
