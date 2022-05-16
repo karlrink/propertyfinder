@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-15-2';
+const version = 'propertyfinder 2022-05-15';
 
 /* 
  * SPA (Single-Page Application)
@@ -140,12 +140,14 @@ function viewInfo() {
 
     html += `
     </div>
-    <br>
     <div>
             <button type="button" onclick="return addLocalStore();">Add Item</button>
             <button type="button" onclick="localStorage.clear();location.reload();">Clear Storage</button>
             <button type="button" onclick="return Login();">Login</button>
             <button type="button" onclick="return Logout();">Logout</button>
+    </div>
+    <div>
+      <p>${version}</p>
     </div>
     `;
 
