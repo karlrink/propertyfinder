@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-15-0';
+const version = 'propertyfinder.2022-05-15-1';
 
 /* 
  * SPA (Single-Page Application)
@@ -101,7 +101,7 @@ function viewHome() {
         document.title = 'Home';
 
         let htmlSegment = `
-        <div class="margin-top-100px">
+        <div>
               <label for="property-search"></label>
               <input type="search" id="property-search" name="property-search"
                      placeholder="Property search...">
@@ -126,7 +126,7 @@ function viewInfo() {
     let html = '';
 
     html += `
-    <div class="margin-top-100px">
+    <div>
     `;
 
 
@@ -138,13 +138,11 @@ function viewInfo() {
 
     html += `
     </div>
-    <div class="margin-top-10px">
-        <footer>
+    <div>
             <button type="button" onclick="return addLocalStore();">Add Item</button>
             <button type="button" onclick="localStorage.clear();location.reload();">Clear Storage</button>
             <button type="button" onclick="return Login();">Login</button>
             <button type="button" onclick="return Logout();">Logout</button>
-        </footer>
     </div>
     `;
 
@@ -161,7 +159,7 @@ function viewGeoMap() {
 
     html += `
 
-    <div class="margin-top-100px">
+    <div>
 
     <form id="form" onsubmit="submitGeoMap(event)">
       <br>
@@ -474,7 +472,7 @@ function viewGeoSearch() {
     let html = '';
 
     html += `
-    <div class="margin-top-100px">
+    <div>
     `;
 
     html += `
@@ -566,7 +564,7 @@ function viewMyLocation() {
     let html = '';
 
     html += `
-    <div class="margin-top-100px">
+    <div>
     `;
 
     html += '<button id="find-me" type="button">Get My Location</button><br/>';
@@ -1103,7 +1101,8 @@ const TopHTML = `
     <li class="menu__item" style="--x: 10; --y: 84;"><a class="menu__link" href="?view=info">Info</a></li>
   </ul>
 </nav>
-<main>
+<header class="page-header"></header>
+<main class="page-body">
 `;
 
 // main <main></main> in the middle
@@ -1119,6 +1118,7 @@ const BottomHTML = `
     </filter>
   </defs>
 </svg>
+<footer class="page-footer"></footer>
 `;
 
 

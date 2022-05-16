@@ -243,9 +243,32 @@ section {
 @media screen and (max-width: 480px) {
   body {
     background: #ccc;
-    padding: 0;
+    /* padding: 0; */
   }
 }
+
+.page-header {
+   /* 
+   margin-top: 100px;
+    background-color: #0085b8;
+    color: #fff;
+    */
+    padding: 5%;
+}
+
+.page-footer {
+    /* background-color: rgb(75, 70, 74); */
+    /*
+    background-color: #0085b8;
+    color: #fff;
+    padding: 20px;
+    */
+}
+
+.page-body {
+    padding: 20px;
+}
+
 
 
 
