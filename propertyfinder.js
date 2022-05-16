@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder.2022-05-15-1';
+const version = 'propertyfinder.2022-05-15-2';
 
 /* 
  * SPA (Single-Page Application)
@@ -106,7 +106,9 @@ function viewHome() {
               <input type="search" id="property-search" name="property-search"
                      placeholder="Property search...">
 
-              <button type="button">Search</button>
+        </div>
+        <div>
+         <button type="button">Search</button>
         </div>
         `;
 
@@ -138,6 +140,7 @@ function viewInfo() {
 
     html += `
     </div>
+    <br>
     <div>
             <button type="button" onclick="return addLocalStore();">Add Item</button>
             <button type="button" onclick="localStorage.clear();location.reload();">Clear Storage</button>
@@ -1078,7 +1081,8 @@ window.addEventListener('hashchange', function(event) {
 
 //-----------------------------------------------------------
 
-/* this is the layout section */
+/* this is the layout */
+//<nav class="menu" style="--hue: 248.9758276163942">
 
 const TopHTML = `
 <nav class="menu" style="--hue: 248.9758276163942">

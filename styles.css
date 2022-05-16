@@ -4,7 +4,8 @@
 @import url("https://fonts.googleapis.com/css?family=Alata&display=swap");
 
 * {
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
+  box-sizing: inherit;
 }
 
 :root {
@@ -17,17 +18,17 @@
 html {
     height: 100%;
     box-sizing: border-box;
-    padding: 0;
     margin: 0;
+    padding: 0;
 }
 
 body {
   height: 100%;
-  margin: 0;
   background: #fafafa;
   font-family: Helvetica;
   min-height: 100vh;
   overflow-x: hidden;
+  margin: 0;
   padding: 0;
 }
 
@@ -39,6 +40,7 @@ main {
       scroll-snap-type: y mandatory;
 }
 
+/*
 section {
   align-items: center;
   display: flex;
@@ -48,6 +50,7 @@ section {
   scroll-snap-align: center;
   width: 100vw;
 }
+*/
 
 .menu {
   position: fixed;
@@ -253,6 +256,7 @@ section {
     background-color: #0085b8;
     color: #fff;
     */
+    margin-top: 10px ;
     padding: 5%;
 }
 
@@ -269,7 +273,48 @@ section {
     padding: 20px;
 }
 
+/*
+input[type="search"] {
+    font-size: 20px;
+    background: white;
+    padding: 10px 20px;
+    border: none;
+}
+*/
+
+input[type="search"] {
+    font-size: 20px;
+    background: white;
+}
+
+
+button[type="button"], 
+button[type="submit"] {
+    color: white ; /* text font color */
+    font-family: Helvetica ;
+    font-weight: bold ;
+    padding: 15px;
+    /* border: 1px solid black ; */
+    border: 1px solid black ;
+    -moz-border-radius: 8px ;
+    -webkit-border-radius: 8px ;
+    -webkit-appearance: none !important;
+    margin-top: 10px ;
+    margin-bottom: 10px ;
+    background-color: #5340be ;
+}
 
 
 
+button[type="button"]:hover, 
+button[type="submit"]:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    /* color: yellow; */
+}
+
+
+
+/* background: #fafafa; light-white */
+/* html color #5340be menu blue */
 
