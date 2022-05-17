@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-15 v1';
+const version = 'propertyfinder 2022-05-17-0';
 
 /* 
  * SPA (Single-Page Application)
@@ -89,7 +89,7 @@ function viewHome() {
         </style>
 
         <div>
-              <a href="?login"><button type="button">Login</button></a>
+              <a href="?login"><button type="none">Login</button></a>
         </div>
         `;
 
@@ -100,6 +100,7 @@ function viewHome() {
 
         document.title = 'Home';
 
+        /*
         let htmlSegment = `
         <div>
               <label for="property-search"></label>
@@ -108,9 +109,32 @@ function viewHome() {
 
         </div>
         <div>
-         <button type="button">Search</button>
+               <button type="submit">Search</button>
         </div>
         `;
+        */
+
+        let htmlSegment = `
+
+    <form id="form" onsubmit="submitHomeForm(event)">
+
+      <label for="home-search"></label>
+
+      <input type="search" id="home-search" name="home-search" 
+              placeholder="Property search...">
+ 
+    <br>
+    <button type="submit">Search</button>
+
+    </form>
+
+    <br>
+
+    <div id="form-output"></div>
+
+        `;
+
+
 
         html = TopHTML + htmlSegment + BottomHTML;
 
@@ -121,6 +145,105 @@ function viewHome() {
 
     //history.pushState({page: 'home'}, "home", "?view=home");
 }
+
+window.submitHomeForm = submitHomeForm;
+
+async function submitHomeForm(event) {
+  
+    event.preventDefault();
+
+    const search_input = event.target['home-search'].value;
+
+
+    const opensearch_data =
+    {
+      "from": 0,
+      "size": 10,
+      "query": {
+        "multi_match": {
+          "query": search_input,
+          "fields": ["street_address", "city", "county", "state_or_province",
+                     "description", "legal_description", "mls_disclaimer",
+                     "property_record_type", "sale_type"]
+        }
+      }
+    }
+
+    const url = origin + "/ninfo-property/_search";
+
+    const headers = {};
+    headers['Authorization'] = 'Basic ' + base64;
+    headers['Content-Type'] = 'application/json';
+
+    const post = await fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: headers,
+      body: JSON.stringify(opensearch_data)
+    })
+    .then(getResponse)
+    .catch(err => document.write('Request Failed ', err));
+
+    const response = await post.json();
+
+    const hits = JSON.parse(JSON.stringify(response['hits']['hits']));
+
+    let htmlSegment = '';
+
+    for (let hit in hits) {
+
+        let street_address    = hits[hit]['_source'].street_address;
+        let city              = hits[hit]['_source'].city;
+        let state_or_province = hits[hit]['_source'].state_or_province;
+        let postal_code       = hits[hit]['_source'].postal_code;
+
+        let latitude_2        = hits[hit]['_source'].latitude;
+        let longitude_2       = hits[hit]['_source'].longitude;
+
+        let picture_data_source_url = hits[hit]['_source'].picture_data_source_url;
+
+        let google_maps_href = `https://maps.google.com/maps?q=${latitude_2},${longitude_2}`;
+
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
+        // prevent tabnabbing with rel="noopener noreferrer" https://en.wikipedia.org/wiki/Tabnabbing
+
+        htmlSegment += `
+        <div>
+          <details>
+              <summary>
+                  ${street_address} ${city} ${state_or_province} ${postal_code}
+                  <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍 ${latitude_2},${longitude_2}</a> )
+                  <a href="${picture_data_source_url}" target="_blank" rel="noopener noreferrer">👁️</a>
+              </summary>
+              <p>
+        `;
+
+        for (let item in hits[hit]['_source']){
+        
+            let value = hits[hit]['_source'][item];
+
+            if (value !== null) {
+             //console.log(item);
+             //console.log(value);
+               htmlSegment += ` ${item}: ${value} <br>`;
+            }
+
+        } //end for hits
+
+        htmlSegment += `
+              </p>
+          </details>
+        </div>
+        `;
+
+    } //end for
+
+    document.querySelector('#form-output').innerHTML = htmlSegment;
+
+    history.pushState({page: 'home-submit'}, "home-submit", "?view=home&submit=true");
+
+}
+
 
 
 function viewInfo() {
