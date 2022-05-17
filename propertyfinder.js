@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-17-0';
+const version = 'propertyfinder 2022-05-17-1';
 
 /* 
  * SPA (Single-Page Application)
@@ -77,9 +77,6 @@ function viewHome() {
 
         document.title = 'Login Required';
 
-        // The <center> tag was used in HTML4 to center-align text. Not Supported in HTML5.
-        // https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align
-
         html += `
         <style>
           div { text-align: center;
@@ -93,48 +90,23 @@ function viewHome() {
         </div>
         `;
 
-        //history.pushState({page: 'home'}, "home", "?view=home");
         history.pushState({page: 'home'}, "home", "");
 
     } else {
 
-        document.title = 'Home';
-
-        /*
-        let htmlSegment = `
-        <div>
-              <label for="property-search"></label>
-              <input type="search" id="property-search" name="property-search"
-                     placeholder="Property search...">
-
-        </div>
-        <div>
-               <button type="submit">Search</button>
-        </div>
-        `;
-        */
+        document.title = 'PropertyFinder: Home';
 
         let htmlSegment = `
-
-    <form id="form" onsubmit="submitHomeForm(event)">
-
-      <label for="home-search"></label>
-
-      <input type="search" id="home-search" name="home-search" 
-              placeholder="Property search...">
- 
-    <br>
-    <button type="submit">Search</button>
-
-    </form>
-
-    <br>
-
-    <div id="form-output"></div>
-
+        <form id="form" onsubmit="submitHomeForm(event)">
+          <label for="home-search"></label>
+          <input type="search" id="home-search" name="home-search" 
+                  placeholder="Property search...">
+          <br>
+          <button type="submit">Search</button>
+        </form>
+        <br>
+        <div id="form-output"></div>
         `;
-
-
 
         html = TopHTML + htmlSegment + BottomHTML;
 
@@ -154,11 +126,10 @@ async function submitHomeForm(event) {
 
     const search_input = event.target['home-search'].value;
 
-
     const opensearch_data =
     {
       "from": 0,
-      "size": 10,
+      "size": 20,
       "query": {
         "multi_match": {
           "query": search_input,
@@ -188,7 +159,23 @@ async function submitHomeForm(event) {
 
     const hits = JSON.parse(JSON.stringify(response['hits']['hits']));
 
+    const response_took    = JSON.parse(JSON.stringify(response['took'])); // these are milliseconds
+    console.log(response_took);
+
+    const hits_total_value    = JSON.parse(JSON.stringify(response['hits']['total'].value));
+    const hits_total_relation = JSON.parse(JSON.stringify(response['hits']['total'].relation));
+
+    //console.log(hits_total_value);
+
     let htmlSegment = '';
+
+    htmlSegment += `
+    <div>
+    <p>
+        hits: ${hits_total_relation} ${hits_total_value} (display: 1-20) took: ${response_took} milliseconds
+    </p>
+    </div>
+    `;
 
     for (let hit in hits) {
 
@@ -197,22 +184,20 @@ async function submitHomeForm(event) {
         let state_or_province = hits[hit]['_source'].state_or_province;
         let postal_code       = hits[hit]['_source'].postal_code;
 
-        let latitude_2        = hits[hit]['_source'].latitude;
-        let longitude_2       = hits[hit]['_source'].longitude;
+        let latitude_hit        = hits[hit]['_source'].latitude;
+        let longitude_hit       = hits[hit]['_source'].longitude;
 
         let picture_data_source_url = hits[hit]['_source'].picture_data_source_url;
 
-        let google_maps_href = `https://maps.google.com/maps?q=${latitude_2},${longitude_2}`;
+        let google_maps_href = `https://maps.google.com/maps?q=${latitude_hit},${longitude_hit}`;
 
-        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
-        // prevent tabnabbing with rel="noopener noreferrer" https://en.wikipedia.org/wiki/Tabnabbing
 
         htmlSegment += `
         <div>
           <details>
               <summary>
                   ${street_address} ${city} ${state_or_province} ${postal_code}
-                  <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍 ${latitude_2},${longitude_2}</a> )
+                  <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍 ${latitude_hit},${longitude_hit}</a> )
                   <a href="${picture_data_source_url}" target="_blank" rel="noopener noreferrer">👁️</a>
               </summary>
               <p>
@@ -225,7 +210,32 @@ async function submitHomeForm(event) {
             if (value !== null) {
              //console.log(item);
              //console.log(value);
-               htmlSegment += ` ${item}: ${value} <br>`;
+
+                    switch (item) {
+
+                      case 'picture_data_source_url':
+                          htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                          break;
+
+                      case 'picture_data_url':
+                          let image_file = value.split('/').slice(-1);
+                          let public_url = 'https://ninfo-property-images.s3.us-west-2.amazonaws.com/' + image_file;
+                          htmlSegment += ` ${item}: <a href="${public_url}" target="_blank">${value}</a> <br>`;
+                          break;
+
+                      case 'source_url':
+                          htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                          break;
+
+                      case 'coordinate':
+                          htmlSegment += ` ${item}: <a href="https://maps.google.com/maps?q=${latitude_hit},${longitude_hit}" target="_blank">${latitude_hit}°,${longitude_hit}°</a> <br>`;
+                          break;
+
+                      default:
+                        htmlSegment += ` ${item}: ${value} <br>`;
+
+                    }
+
             }
 
         } //end for hits
@@ -238,13 +248,54 @@ async function submitHomeForm(event) {
 
     } //end for
 
+    htmlSegment += `
+    <div>
+    <br>
+      <a href="?view=search">take me to the advanced search...</a>
+    </div>
+    `;
+
     document.querySelector('#form-output').innerHTML = htmlSegment;
 
     history.pushState({page: 'home-submit'}, "home-submit", "?view=home&submit=true");
-
 }
 
 
+function viewSearch() {
+
+    document.title = 'PropertyFinder: Search';
+
+    let html = '';
+
+    html += `
+
+    <div>
+    🚧 UNDER CONSTRUCTION 🚧 
+    <div>
+    <br>
+
+    <div>
+
+    <form id="form" onsubmit="submitSearch(event)">
+      <label for="search">search:</label>
+      <input type="text" id="search" name="search" placeholder="Advanced search...?">
+      <br>
+      <button type="submit">Search</button>
+    </form>
+
+    </div>
+
+    `;
+
+    container.innerHTML = TopHTML + html + BottomHTML;
+
+    const form = document.getElementById('form');
+
+    history.pushState({page: 'search'}, "search", "?view=search");
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
+// prevent tabnabbing with rel="noopener noreferrer" https://en.wikipedia.org/wiki/Tabnabbing
 
 function viewInfo() {
 
@@ -281,7 +332,7 @@ function viewInfo() {
 
 function viewGeoMap() {
 
-    document.title = 'Geo Map';
+    document.title = 'PropertyFinder: Geo Map';
 
     let html = '';
 
@@ -593,7 +644,7 @@ async function submitGeoMap(event) {
 
 function viewGeoSearch() {
 
-    document.title = 'Geo Search';
+    document.title = 'PropertyFinder: Geo Search';
 
     const url = origin + "/ninfo-property/_search"
 
@@ -689,7 +740,7 @@ function viewGeoSearch() {
 
 function viewMyLocation() {
 
-    document.title = 'My Location';
+    document.title = 'PropertyFinder: My Location';
 
     let html = '';
 
@@ -890,7 +941,7 @@ async function submitGeoForm(event) {
 
 function viewMaps() {
 
-    document.title = 'Property Maps';
+    document.title = 'PropertyFinder: Property Maps';
 
     var script_polyfill = document.createElement('script');
     script_polyfill.src = 'https://polyfill.io/v3/polyfill.min.js?features=default';
@@ -1180,6 +1231,10 @@ function router() {
 
         if (view === 'maps') {
             return viewMaps();
+        }
+
+        if (view === 'search') {
+            return viewSearch();
         }
 
     }
