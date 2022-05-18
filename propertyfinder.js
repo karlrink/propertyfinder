@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-17-1';
+const version = 'propertyfinder 2022-05-17 v1';
 
 /* 
  * SPA (Single-Page Application)
@@ -135,10 +135,17 @@ async function submitHomeForm(event) {
           "query": search_input,
           "fields": ["street_address", "city", "county", "state_or_province",
                      "description", "legal_description", "mls_disclaimer",
-                     "property_record_type", "sale_type"]
+                     "property_record_type", "sale_type", "full_street_name"]
         }
       }
     }
+
+
+    /*
+          "fields": ["street_address", "city", "county", "state_or_province",
+                     "description", "legal_description", "mls_disclaimer",
+                     "property_record_type", "sale_type"]
+    */
 
     const url = origin + "/ninfo-property/_search";
 
@@ -191,14 +198,94 @@ async function submitHomeForm(event) {
 
         let google_maps_href = `https://maps.google.com/maps?q=${latitude_hit},${longitude_hit}`;
 
+        let amount_hit         = hits[hit]['_source'].amount;
+        let rent_hit           = hits[hit]['_source'].rent;
+        let pool_hit           = hits[hit]['_source'].pool;
+
+        let currency_us = (amount_hit).toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+        });
+
+        let property_record_type = hits[hit]['_source'].property_record_type;
+
+        let rent_or_sale = '';
+        if (rent_hit !== null) {
+            rent_or_sale = '💳';
+        } else {
+            rent_or_sale = '💵';
+        }
+
+        let has_pool = '';
+        if (pool_hit !== null) {
+            has_pool = '🏊';
+        } else {
+            has_pool = '';
+        }
+
+        let house_type = '';
+        if (property_record_type !== null) {
+            //house_type = '';
+
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch
+
+            switch (property_record_type) {
+
+                case 'VacantLand':
+                  house_type = '🌾';
+                  break;
+
+                case 'SingleFamilyHome':
+                  house_type = '🏠';
+                  break;
+
+                case 'MultifamilyTwoToFourUnits':
+                  house_type = '🏘️';
+                  break;
+
+                case 'TownhouseOrCondo':
+                  house_type = '🏢';
+                  break;
+
+                case 'Other':
+                  house_type = '';
+                  break;
+
+                default:
+                  house_type = '';
+            }
+
+        } else {
+            house_type = '';
+        }
+
+        // property_record_type: VacantLand 🌾 
+        // property_record_type: SingleFamilyHome 🏠  
+        // property_record_type: MultifamilyTwoToFourUnits 🏘️  
+        // property_record_type: TownhouseOrCondo 🏢  
+
+        // property_record_type: Other 
+
+        // bedrooms: 2 
+        // baths_total: 1.00 
+
+        // room_list: Bedroom, Full Bath 
 
         htmlSegment += `
         <div>
           <details>
               <summary>
                   ${street_address} ${city} ${state_or_province} ${postal_code}
-                  <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍 ${latitude_hit},${longitude_hit}</a> )
+                  <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍<small>${latitude_hit}°,${longitude_hit}°</small></a>
                   <a href="${picture_data_source_url}" target="_blank" rel="noopener noreferrer">👁️</a>
+                  ${house_type} ${rent_or_sale} ${currency_us} ${has_pool}
+        `;
+
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small
+
+        htmlSegment += `
               </summary>
               <p>
         `;
@@ -785,7 +872,7 @@ function geoFindMe() {
     //mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
 
     mapLink.href = `https://maps.google.com/maps?q=${latitude},${longitude}`;
-    mapLink.textContent = `📍 ${latitude}°,${longitude}°`;
+    mapLink.textContent = `📍<small>${latitude}°,${longitude}°</small>`;
 
     geoForm.innerHTML = `
     <form onsubmit="submitGeoForm(event)">
@@ -900,13 +987,8 @@ async function submitGeoForm(event) {
     htmlSegment += `<summary>`;
     htmlSegment += `${street_address} ${city} ${state_or_province} ${postal_code}`;
     htmlSegment += `( ${haversine_distance} `;
-    // prevent tabnabbing with rel="noopener noreferrer" https://en.wikipedia.org/wiki/Tabnabbing
 
-    //htmlSegment += `<a href="${openstreetmap_href}" target="_blank" rel="noopener noreferrer">${latitude_2},${longitude_2}</a>`;
-    //htmlSegment += ` <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍</a>)`;
-    //htmlSegment += ` 📍 ${latitude_2},${longitude_2} ) `;
-
-    htmlSegment += ` <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍 ${latitude_2},${longitude_2}</a> )`;
+    htmlSegment += ` <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍<small>${latitude_2}°,${longitude_2}°</small></a> )`;
 
     htmlSegment += ` <a href="${picture_data_source_url}" target="_blank" rel="noopener noreferrer">👁️</a>`;
 
