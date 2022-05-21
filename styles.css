@@ -1,6 +1,7 @@
 
 /* property-finder.app */
 
+
 @import url("https://fonts.googleapis.com/css?family=Alata&display=swap");
 
 * {
@@ -25,7 +26,7 @@ html {
 body {
   height: 100%;
   background: #fafafa;
-  font-family: Helvetica;
+  font-family: Alata;
   min-height: 100vh;
   overflow-x: hidden;
   margin: 0;
@@ -292,7 +293,7 @@ input[type="search"] {
 button[type="button"], 
 button[type="submit"] {
     color: white ; /* text font color */
-    font-family: Helvetica ;
+    font-family: Alata ;
     font-weight: bold ;
     padding: 15px;
     /* border: 1px solid black ; */
@@ -313,6 +314,54 @@ button[type="submit"]:hover {
     cursor: pointer;
     /* color: yellow; */
 }
+
+/*
+small:a:link,
+small:a:visited,
+small:a:hover,
+small:a:active {
+    text-decoration: none;
+}
+*/
+
+/*
+.type-link {
+  text-decoration: none;
+}
+.type-link:link {
+  text-decoration: none;
+}
+.type-link:visited {
+  text-decoration: none;
+}
+.type-link:hover {
+  text-decoration: none;
+}
+.type-link:active {
+  text-decoration: none;
+}
+
+.type-link:a:link {
+  text-decoration: none;
+}
+.type-link:a:visited {
+  text-decoration: none;
+}
+.type-link:a:hover {
+  text-decoration: none;
+}
+.type-link:a:active {
+  text-decoration: none;
+}
+*/
+
+a:link { 
+  text-decoration: none; 
+}
+
+/* a:link { text-decoration: none; } */
+/* a:hover { text-decoration: none; } */
+/* a:active { text-decoration: none; } */
 
 
 

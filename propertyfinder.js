@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-21 v1';
+const version = 'propertyfinder 2022-05-21 v2';
 
 /* 
  * SPA (Single-Page Application)
@@ -137,7 +137,6 @@ async function submitHomeForm(event) {
     {
       "from": 0,
       "size": 20,
-      "sort" : "street_address",
       "query": {
         "multi_match": {
           "query": search_input,
@@ -845,7 +844,8 @@ function viewMyLocation() {
 
     html += '<button id="find-me" type="button">Get My Location</button><br/>';
     html += '<p id="status"></p>';
-    html += '<small><a id="map-link" target="_blank"></a></small>';
+    //html += '<small class="type-link"><a id="map-link" target="_blank"></a> hello </small> hello';
+    html += '<small class="type-link"><a id="map-link" target="_blank"></a></small>';
     html += '<div id="geo-form"></div>';
     html += '<div id="geo-output"></div>';
 
@@ -1034,7 +1034,7 @@ async function submitGeoForm(event) {
 
     htmlSegment += `<br>`;
 
-    htmlSegment += `<small>`;
+    htmlSegment += `<small class="type-link">`;
 
     htmlSegment += `<a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍</a>`;
     htmlSegment += `${haversine_distance}`;
