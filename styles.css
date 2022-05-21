@@ -217,7 +217,7 @@ section {
 .menu__link:hover {
   /* text-decoration: underline; */
   text-decoration: none;
-  color: blue;
+  color: lightblue;
 }
 
 /* required for app id="container" */
@@ -315,7 +315,7 @@ button[type="submit"]:hover {
     /* text-decoration: underline; */
     text-decoration: none;
     cursor: pointer;
-    color: blue; 
+    color: lightblue; 
 }
 
 /*
