@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-17 v1';
+const version = 'propertyfinder 2022-05-21 v0';
 
 /* 
  * SPA (Single-Page Application)
@@ -125,11 +125,19 @@ async function submitHomeForm(event) {
     event.preventDefault();
 
     const search_input = event.target['home-search'].value;
+/*
+      "sort": {
+          "street_address": {
+              "order": "desc"
+          }
+      },
 
+*/
     const opensearch_data =
     {
       "from": 0,
       "size": 20,
+      "sort" : "street_address",
       "query": {
         "multi_match": {
           "query": search_input,
@@ -872,7 +880,7 @@ function geoFindMe() {
     //mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
 
     mapLink.href = `https://maps.google.com/maps?q=${latitude},${longitude}`;
-    mapLink.textContent = `📍<small>${latitude}°,${longitude}°</small>`;
+    mapLink.textContent = `📍${latitude}°,${longitude}°`;
 
     geoForm.innerHTML = `
     <form onsubmit="submitGeoForm(event)">
