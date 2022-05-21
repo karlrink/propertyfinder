@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-21 v0';
+const version = 'propertyfinder 2022-05-21 v1';
 
 /* 
  * SPA (Single-Page Application)
@@ -845,7 +845,7 @@ function viewMyLocation() {
 
     html += '<button id="find-me" type="button">Get My Location</button><br/>';
     html += '<p id="status"></p>';
-    html += '<a id="map-link" target="_blank"></a>';
+    html += '<small><a id="map-link" target="_blank"></a></small>';
     html += '<div id="geo-form"></div>';
     html += '<div id="geo-output"></div>';
 
@@ -975,34 +975,84 @@ async function submitGeoForm(event) {
     let state_or_province = hits[hit]['_source'].state_or_province;
     let postal_code       = hits[hit]['_source'].postal_code;
 
-    let latitude_2        = hits[hit]['_source'].latitude;
-    let longitude_2       = hits[hit]['_source'].longitude;
+    let latitude_hit      = hits[hit]['_source'].latitude;
+    let longitude_hit     = hits[hit]['_source'].longitude;
 
     let picture_data_source_url = hits[hit]['_source'].picture_data_source_url;
 
-    let haversine_distance = HaverSine(latitude,longitude,latitude_2,longitude_2).toFixed(1);
+    let haversine_distance = HaverSine(latitude,longitude,latitude_hit,longitude_hit).toFixed(1);
 
-    let openstreetmap_href = `https://www.openstreetmap.org/#map=18/${latitude_2}/${longitude_2}`;
+    //let openstreetmap_href = `https://www.openstreetmap.org/#map=18/${latitude_hit}/${longitude_hit}`;
 
-    let google_maps_href = `https://maps.google.com/maps?q=${latitude_2},${longitude_2}`;
+    let picture_data_url = hits[hit]['_source'].picture_data_url;
 
-    //htmlSegment += street_address + ' ' + city + ' ' + state_or_province + ' ' + postal_code + '<br>';
+    let image_file = '';
+    let public_url = '';
+    let has_picture = '';
 
-    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
+    if (picture_data_url !== null) {
+      image_file = picture_data_url.split('/').slice(-1);
+      public_url = 'https://ninfo-property-images.s3.us-west-2.amazonaws.com/' + image_file;
+      has_picture = ' 👁️';
+    }
 
-    htmlSegment += `<div>`;
-    htmlSegment += `<details>`;
-    htmlSegment += `<summary>`;
+    let google_maps_href = `https://maps.google.com/maps?q=${latitude_hit},${longitude_hit}`;
+
+    let amount_hit         = hits[hit]['_source'].amount;
+    let rent_hit           = hits[hit]['_source'].rent;
+    let pool_hit           = hits[hit]['_source'].pool;
+
+    let currency_us = (amount_hit).toLocaleString('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0
+    });
+
+    let rent_or_sale = '';
+    if (rent_hit !== null) {
+        rent_or_sale = '💳';
+    } else {
+        rent_or_sale = '💵';
+    }
+
+
+    let has_pool = '';
+    if (pool_hit !== null) {
+        has_pool = '🏊';
+    } else {
+        has_pool = '';
+    }
+
+    htmlSegment += `
+    <div>
+      <details>
+        <summary>
+    `;
+
     htmlSegment += `${street_address} ${city} ${state_or_province} ${postal_code}`;
-    htmlSegment += `( ${haversine_distance} `;
 
-    htmlSegment += ` <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍<small>${latitude_2}°,${longitude_2}°</small></a> )`;
+    htmlSegment += `<br>`;
 
-    htmlSegment += ` <a href="${picture_data_source_url}" target="_blank" rel="noopener noreferrer">👁️</a>`;
+    htmlSegment += `<small>`;
 
-    htmlSegment += `</summary>`;
+    htmlSegment += `<a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍</a>`;
+    htmlSegment += `${haversine_distance}`;
+    htmlSegment += ` (<a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">${latitude_hit}°,${longitude_hit}°</a>) `;
+    htmlSegment += `${rent_or_sale}${currency_us}`;
 
-    htmlSegment += `<p>`;
+    if (picture_data_url !== null) {
+      htmlSegment += ` <a href="${public_url}" target="_blank" rel="noopener noreferrer">${has_picture}</a>`;
+    }
+
+    htmlSegment += `${has_pool}`;
+
+    htmlSegment += `</small>`;
+
+    htmlSegment += `
+        </summary>
+        <p>
+    `;
 
     for (let item in hits[hit]['_source']){
     
@@ -1011,14 +1061,46 @@ async function submitGeoForm(event) {
       if (value !== null) {
          //console.log(item);
          //console.log(value);
-         htmlSegment += ` ${item}: ${value} <br>`;
+         //htmlSegment += ` ${item}: ${value} <br>`;
+
+                      switch (item) {
+
+                        case 'picture_data_source_url':
+                            htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                            break;
+
+                        case 'picture_data_url':
+                          // picture_data_url: /local_images/4ea/4eab11c9aa3dca632472e598a9bbb0ad8c0d3ea9.jpg
+                          // https://ninfo-property-images.s3.us-west-2.amazonaws.com/4eab11c9aa3dca632472e598a9bbb0ad8c0d3ea9.jpg
+
+                            let image_file = value.split('/').slice(-1);
+                            let public_url = 'https://ninfo-property-images.s3.us-west-2.amazonaws.com/' + image_file;
+
+                            htmlSegment += ` ${item}: <a href="${public_url}" target="_blank">${value}</a> <br>`;
+                            break;
+
+                        case 'source_url':
+                            htmlSegment += ` ${item}: <a href="${value}" target="_blank">${value}</a> <br>`;
+                            break;
+
+                        case 'coordinate':
+                            htmlSegment += ` ${item}: <a href="https://maps.google.com/maps?q=${latitude_hit},${longitude_hit}"
+                                                         target="_blank">${latitude_hit}°,${longitude_hit}°</a> <br>`;
+                            break;
+
+                        default:
+
+                          htmlSegment += ` ${item}: ${value} <br>`;
+                      }
       }
 
     }
 
-    htmlSegment += `</p>`;
-    htmlSegment += `</details>`;
-    htmlSegment += `</div>`;
+    htmlSegment += `
+      </p>
+      </details>
+    </div>
+    `;
 
   }
 
