@@ -215,7 +215,9 @@ section {
 }
 
 .menu__link:hover {
-  text-decoration: underline;
+  /* text-decoration: underline; */
+  text-decoration: none;
+  color: blue;
 }
 
 /* required for app id="container" */
@@ -310,9 +312,10 @@ button[type="submit"] {
 
 button[type="button"]:hover, 
 button[type="submit"]:hover {
-    text-decoration: underline;
+    /* text-decoration: underline; */
+    text-decoration: none;
     cursor: pointer;
-    /* color: yellow; */
+    color: blue; 
 }
 
 /*

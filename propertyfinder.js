@@ -1,5 +1,5 @@
 
-const version = 'propertyfinder 2022-05-21 v2';
+const version = 'property-finder 2022-05-21 v3';
 
 /* 
  * SPA (Single-Page Application)
