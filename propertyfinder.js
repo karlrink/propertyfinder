@@ -1,5 +1,5 @@
 
-const version = 'property-finder 2022-05-21 v4';
+const version = 'property-finder 2022-05-21 v5';
 
 /* 
  * SPA (Single-Page Application)
@@ -16,6 +16,7 @@ const container = document.getElementById('container');
 import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.0.5";
 
 const google_maps_api_key = "AIzaSyCXefUTU9KCoT8Na7AiwLpcp6ZmXAtLVpk";
+
 /* google_maps_api_key
   this is a hard coded key that is restricted at/by the provider (google)
   you can get your own key and find out more regarding restricted api keys
@@ -285,7 +286,7 @@ async function submitHomeForm(event) {
           <details>
               <summary>
                   ${street_address} ${city} ${state_or_province} ${postal_code}
-                  <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍<small>${latitude_hit}°,${longitude_hit}°</small></a>
+                  <a href="${google_maps_href}" target="_blank" rel="noopener noreferrer">📍(<small>${latitude_hit}°,${longitude_hit}°</small>)</a>
                   <a href="${picture_data_source_url}" target="_blank" rel="noopener noreferrer">👁️</a>
                   ${house_type} ${rent_or_sale} ${currency_us} ${has_pool}
         `;
@@ -843,9 +844,10 @@ function viewMyLocation() {
     `;
 
     html += '<button id="find-me" type="button">Get My Location</button><br/>';
-    html += '<p id="status"></p>';
-    //html += '<small class="type-link"><a id="map-link" target="_blank"></a> hello </small> hello';
-    html += '<small class="type-link"><a id="map-link" target="_blank"></a></small>';
+
+    html += '<div><p id="status"></p></div>';
+
+    html += '<small><a id="map-link" target="_blank"></a></small>';
     html += '<div id="geo-form"></div>';
     html += '<div id="geo-output"></div>';
 
@@ -905,12 +907,13 @@ function geoFindMe() {
   if(!navigator.geolocation) {
     status.textContent = 'Geolocation is not supported by your browser';
   } else {
-    status.textContent = 'Locating...';
+    status.textContent = `📍Locating...`;
     navigator.geolocation.getCurrentPosition(success, error);
   }
 
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent
 
 window.submitGeoForm = submitGeoForm;
 
